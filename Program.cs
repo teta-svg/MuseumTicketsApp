@@ -9,7 +9,7 @@ namespace ConsoleApp17
     {
         static void Main()
         {
-
+            
         }
     }
 }
