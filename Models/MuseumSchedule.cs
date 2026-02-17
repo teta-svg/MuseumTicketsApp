@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 namespace ConsoleApp17.Models;
 
 [Table("MuseumSchedule")]
-[Index("MuseumId", Name = "UQ__MuseumSc__C10D28D31732D6C5", IsUnique = true)]
 public partial class MuseumSchedule
 {
     [Key]
@@ -26,7 +25,7 @@ public partial class MuseumSchedule
     public TimeOnly CloseTime { get; set; }
 
     [ForeignKey("MuseumId")]
-    [InverseProperty("MuseumSchedule")]
+    [InverseProperty("MuseumSchedules")]
     public virtual Museum Museum { get; set; } = null!;
 
     [InverseProperty("MuseumSchedule")]

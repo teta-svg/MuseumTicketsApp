@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ConsoleApp17.Models;
 
 [Table("Ticket")]
+[Index("ExhibitionId", "Type", Name = "UQ_Ticket_Exhibition_Type", IsUnique = true)]
 public partial class Ticket
 {
     [Key]
@@ -18,6 +19,11 @@ public partial class Ticket
 
     [StringLength(50)]
     public string Type { get; set; } = null!;
+
+    [StringLength(20)]
+    public string Status { get; set; } = null!;
+
+    public int AvailableQuantity { get; set; }
 
     [ForeignKey("ExhibitionId")]
     [InverseProperty("Tickets")]

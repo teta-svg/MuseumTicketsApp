@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ConsoleApp17.Models;
 
 [Table("User")]
-[Index("Email", Name = "UQ__User__A9D105340FA63F3D", IsUnique = true)]
+[Index("Email", Name = "UQ__User__A9D10534D2118DAE", IsUnique = true)]
 public partial class User
 {
     [Key]

@@ -1,4 +1,4 @@
-﻿using ConsoleApp17.Models;
+﻿//using ConsoleApp17.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;

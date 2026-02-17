@@ -13,6 +13,9 @@ public partial class Museum
     [Column("MuseumID")]
     public int MuseumId { get; set; }
 
+    [Column("MuseumComplexID")]
+    public int MuseumComplexId { get; set; }
+
     [StringLength(255)]
     public string Name { get; set; } = null!;
 
@@ -25,9 +28,6 @@ public partial class Museum
     [StringLength(5)]
     public string House { get; set; } = null!;
 
-    [Column("MuseumComplexID")]
-    public int MuseumComplexId { get; set; }
-
     [ForeignKey("MuseumComplexId")]
     [InverseProperty("Museums")]
     public virtual MuseumComplex MuseumComplex { get; set; } = null!;
@@ -36,5 +36,5 @@ public partial class Museum
     public virtual ICollection<MuseumExhibition> MuseumExhibitions { get; set; } = new List<MuseumExhibition>();
 
     [InverseProperty("Museum")]
-    public virtual MuseumSchedule? MuseumSchedule { get; set; }
+    public virtual ICollection<MuseumSchedule> MuseumSchedules { get; set; } = new List<MuseumSchedule>();
 }
