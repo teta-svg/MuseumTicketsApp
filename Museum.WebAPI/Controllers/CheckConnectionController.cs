@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ConsoleApp17;
+using Museum.Persistence;
 
 [ApiController]
 [Route("api/[controller]")]

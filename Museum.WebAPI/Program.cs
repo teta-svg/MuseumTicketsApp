@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using ConsoleApp17;
+using Museum.Application.Interfaces;
+using Museum.Application.Services;
+using Museum.Persistence;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,8 @@ builder.Services.AddDbContext<MuseumTicketsDBContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddScoped<IExhibitionService, ExhibitionService>();
 
 var app = builder.Build();
 

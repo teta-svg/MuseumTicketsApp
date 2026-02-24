@@ -1,6 +1,7 @@
 ﻿-- сценарий создания БД и таблиц
 IF DB_ID('MuseumTicketsDB') IS NOT NULL
 BEGIN
+    ALTER DATABASE MuseumTicketsDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
     DROP DATABASE MuseumTicketsDB;
 END
 GO
@@ -9,21 +10,6 @@ CREATE DATABASE MuseumTicketsDB;
 GO
 
 USE MuseumTicketsDB;
-GO
-
-IF OBJECT_ID('Payment', 'U') IS NOT NULL DROP TABLE Payment;
-IF OBJECT_ID('OrderItem', 'U') IS NOT NULL DROP TABLE OrderItem;
-IF OBJECT_ID('[Order]', 'U') IS NOT NULL DROP TABLE [Order];
-IF OBJECT_ID('[User]', 'U') IS NOT NULL DROP TABLE [User];
-IF OBJECT_ID('TicketPrice', 'U') IS NOT NULL DROP TABLE TicketPrice;
-IF OBJECT_ID('Ticket', 'U') IS NOT NULL DROP TABLE Ticket;
-IF OBJECT_ID('MuseumExhibition', 'U') IS NOT NULL DROP TABLE MuseumExhibition;
-IF OBJECT_ID('Exhibition', 'U') IS NOT NULL DROP TABLE Exhibition;
-IF OBJECT_ID('ScheduleExceptions', 'U') IS NOT NULL DROP TABLE ScheduleExceptions;
-IF OBJECT_ID('ScheduleDays', 'U') IS NOT NULL DROP TABLE ScheduleDays;
-IF OBJECT_ID('MuseumSchedule', 'U') IS NOT NULL DROP TABLE MuseumSchedule;
-IF OBJECT_ID('Museum', 'U') IS NOT NULL DROP TABLE Museum;
-IF OBJECT_ID('MuseumComplex', 'U') IS NOT NULL DROP TABLE MuseumComplex;
 GO
 
 -- Музейный комплекс
@@ -116,7 +102,8 @@ CREATE TABLE Ticket
     TicketID INT IDENTITY(10001,1) PRIMARY KEY,
     ExhibitionID INT NOT NULL,
     Type NVARCHAR(50) NOT NULL,
-    Status NVARCHAR(20) NOT NULL CHECK (Status IN ('Доступен','Продан','Отменён')),
+    -- Добавили N перед строками в CHECK
+    Status NVARCHAR(20) NOT NULL CHECK (Status IN (N'Доступен', N'Продан', N'Отменён')),
     AvailableQuantity INT NOT NULL CHECK (AvailableQuantity >= 0),
     CONSTRAINT FK_Ticket_Exhibition FOREIGN KEY (ExhibitionID)
         REFERENCES Exhibition(ExhibitionID),
@@ -145,8 +132,9 @@ CREATE TABLE [User]
     Email NVARCHAR(50) NOT NULL UNIQUE,
     Phone NVARCHAR(20) NULL,
     Password NVARCHAR(100) NOT NULL,
+    -- Добавили N в CHECK
     Role NVARCHAR(50) NOT NULL
-        CHECK (Role IN ('Гость','Посетитель','Администратор музея','Администратор системы'))
+        CHECK (Role IN (N'Гость', N'Посетитель', N'Администратор музея', N'Администратор системы'))
 );
 GO
 
@@ -156,7 +144,8 @@ CREATE TABLE [Order]
     OrderID INT IDENTITY(10001,1) PRIMARY KEY,
     UserID INT NOT NULL,
     OrderDate DATETIME NOT NULL DEFAULT GETDATE(),
-    Status NVARCHAR(50) NOT NULL CHECK (Status IN ('В ожидании','Оплачен','Отменён')),
+    -- Добавили N в CHECK
+    Status NVARCHAR(50) NOT NULL CHECK (Status IN (N'В ожидании', N'Оплачен', N'Отменён')),
     CONSTRAINT FK_Order_User FOREIGN KEY (UserID) 
         REFERENCES [User](UserID)
 );

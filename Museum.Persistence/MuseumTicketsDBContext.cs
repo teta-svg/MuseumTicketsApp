@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using ConsoleApp17.Models;
 using Microsoft.EntityFrameworkCore;
+using MuseumEntity = ConsoleApp17.Models.Museum;
 
-namespace ConsoleApp17;
+
+
+namespace Museum.Persistence;
 
 public partial class MuseumTicketsDBContext : DbContext
 {
@@ -18,7 +21,7 @@ public partial class MuseumTicketsDBContext : DbContext
 
     public virtual DbSet<Exhibition> Exhibitions { get; set; }
 
-    public virtual DbSet<Museum> Museums { get; set; }
+    public virtual DbSet<MuseumEntity> Museums { get; set; }
 
     public virtual DbSet<MuseumComplex> MuseumComplexes { get; set; }
 
@@ -52,7 +55,7 @@ public partial class MuseumTicketsDBContext : DbContext
             entity.HasKey(e => e.ExhibitionId).HasName("PK__Exhibiti__32CDCC7E11D9447A");
         });
 
-        modelBuilder.Entity<Museum>(entity =>
+        modelBuilder.Entity<MuseumEntity>(entity =>
         {
             entity.HasKey(e => e.MuseumId).HasName("PK__Museum__C10D28D294428B64");
 
