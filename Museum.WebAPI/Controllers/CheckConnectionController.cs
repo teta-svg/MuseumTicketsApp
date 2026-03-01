@@ -23,7 +23,7 @@ public class CheckConnectionController : ControllerBase
             {
                 return Ok("База данных подключена и работает.");
             }
-            return BadRequest("База не отвечает. Проверь строку подключения.");
+            return BadRequest("База не отвечает. Проверить строку подключения.");
         }
         catch (Exception ex)
         {

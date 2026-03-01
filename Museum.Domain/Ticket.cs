@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace ConsoleApp17.Models;
+namespace Museum.Domain;
 
 [Table("Ticket")]
 [Index("ExhibitionId", "Type", Name = "UQ_Ticket_Exhibition_Type", IsUnique = true)]

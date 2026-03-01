@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace ConsoleApp17.Models;
+namespace Museum.Domain;
 
 [Table("User")]
 [Index("Email", Name = "UQ__User__A9D10534D2118DAE", IsUnique = true)]
