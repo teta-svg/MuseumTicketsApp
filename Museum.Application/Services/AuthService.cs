@@ -1,11 +1,13 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Museum.Application.Interfaces;
+using Museum.Domain;
 using Museum.Persistence;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Museum.Application.Services;
 
@@ -58,4 +60,30 @@ public class AuthService : IAuthService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public async Task Register(RegisterRequest request)
+    {
+        var existingUser = await _context.Users.AnyAsync(u => u.Email == request.Email);
+        if (existingUser)
+        {
+            throw new Exception("Пользователь с такой почтой уже существует");
+        }
+
+        string hashedPassword = _passwordHasher.HashPassword(request.Password);
+
+        var user = new User
+        {
+            Email = request.Email,
+            Password = hashedPassword,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            MiddleName = request.MiddleName,
+            Phone = request.Phone,
+            Role = "Посетитель"
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+    }
+
 }

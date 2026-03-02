@@ -5,7 +5,7 @@ using Museum.Application.Interfaces;
 namespace Museum.WebAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")] //путь api/auth
+[Route("api/[controller]")] //api/auth/..
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -15,7 +15,7 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    [HttpPost("login")]
+    [HttpPost("login")] //login
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         var token = await _authService.Login(request.Email, request.Password);
@@ -27,4 +27,19 @@ public class AuthController : ControllerBase
 
         return Ok(new { token });
     }
+
+    [HttpPost("register")] //register
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+    {
+        try
+        {
+            await _authService.Register(request);
+            return Ok(new { message = "Регистрация успешна!" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
 }

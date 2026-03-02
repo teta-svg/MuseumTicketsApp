@@ -5,4 +5,5 @@ namespace Museum.Application.Interfaces;
 public interface IAuthService
 {
     Task<string> Login(string username, string password);
+    Task Register(RegisterRequest request);
 }
