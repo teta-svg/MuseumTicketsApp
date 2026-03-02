@@ -43,6 +43,23 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
+// автоматическое создание и миграция БД при старте
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<MuseumTicketsDBContext>();
+        context.Database.Migrate();
+        Console.WriteLine("База данных успешно обновлена и наполнена данными!");
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ошибка при создании или миграции базы данных.");
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

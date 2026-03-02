@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Museum.Persistence.Configurations;
 using Museum.Domain;
+using Museum.Persistence.Configurations;
+using System.Text.Json;
 using MuseumEntity = Museum.Domain.Museum;
 
 namespace Museum.Persistence;
@@ -31,10 +32,38 @@ public partial class MuseumTicketsDBContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(MuseumTicketsDBContext).Assembly);
+        base.OnModelCreating(modelBuilder);
 
-        OnModelCreatingPartial(modelBuilder);
+        modelBuilder.Entity<User>().HasData(new User //админ
+        {
+            UserId = 10001,
+            LastName = "Админов",
+            FirstName = "Петр",
+            MiddleName = "Петрович",
+            Email = "admin@museum.ru",
+            Password = "$2a$11$0NR8Ir7eg9MNV9VFQsudROSeSoRodME7UsMzNNfmLla/e/gLzQyuK",
+            Phone = "+70000000000",
+            Role = "Администратор системы"
+        });
+
+        var fileName = "seed.json";
+
+        var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+
+        if (File.Exists(jsonPath))
+        {
+            var json = File.ReadAllText(jsonPath);
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var data = JsonSerializer.Deserialize<SeedDataWrapper>(json, options);
+
+            if (data != null)
+            {
+                modelBuilder.Entity<MuseumComplex>().HasData(data.MuseumComplexes);
+                modelBuilder.Entity<MuseumEntity>().HasData(data.Museums);
+                modelBuilder.Entity<Exhibition>().HasData(data.Exhibitions);
+                modelBuilder.Entity<Ticket>().HasData(data.Tickets);
+                modelBuilder.Entity<TicketPrice>().HasData(data.TicketPrices);
+            }
+        }
     }
-
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
