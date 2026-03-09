@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Museum.Domain;
 
+[Table("ScheduleExceptions")]
 public partial class ScheduleException
 {
     [Key]
@@ -20,7 +21,6 @@ public partial class ScheduleException
     public bool IsOpen { get; set; }
 
     public TimeOnly? OpenTime { get; set; }
-
     public TimeOnly? CloseTime { get; set; }
 
     [ForeignKey("MuseumScheduleId")]

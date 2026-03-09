@@ -19,6 +19,9 @@ public partial class MuseumExhibition
     [Column("ExhibitionID")]
     public int ExhibitionId { get; set; }
 
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+
     [ForeignKey("ExhibitionId")]
     [InverseProperty("MuseumExhibitions")]
     public virtual Exhibition Exhibition { get; set; } = null!;

@@ -43,7 +43,7 @@ public partial class MuseumTicketsDBContext : DbContext
             FirstName = "Петр",
             MiddleName = "Петрович",
             Email = "admin@museum.ru",
-            Password = "$2a$11$0NR8Ir7eg9MNV9VFQsudROSeSoRodME7UsMzNNfmLla/e/gLzQyuK",
+            Password = "$2a$11$0NR8Ir7eg9MNV9VFQsudROSeSoRodME7UsMzNNfmLla/e/gLzQyuK", //AdminPassword123!
             Phone = "+70000000000",
             Role = "Администратор системы"
         });

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Museum.Domain;
 
+[Table("ScheduleDays")]
 public partial class ScheduleDay
 {
     [Key]

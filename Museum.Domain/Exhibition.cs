@@ -19,10 +19,6 @@ public partial class Exhibition
     [StringLength(255)]
     public string? Photo { get; set; }
 
-    public DateOnly StartDate { get; set; }
-
-    public DateOnly EndDate { get; set; }
-
     [InverseProperty("Exhibition")]
     public virtual ICollection<MuseumExhibition> MuseumExhibitions { get; set; } = new List<MuseumExhibition>();
 

@@ -78,9 +78,7 @@ CREATE TABLE Exhibition
 (
     ExhibitionID INT IDENTITY(10001,1) PRIMARY KEY,
     Name NVARCHAR(255) NOT NULL,
-    Photo NVARCHAR(255) NULL,
-    StartDate DATE NOT NULL,
-    EndDate DATE NOT NULL
+    Photo NVARCHAR(255) NULL
 );
 GO
 
@@ -89,6 +87,8 @@ CREATE TABLE MuseumExhibition (
     MuseumExhibitionID INT IDENTITY(10001,1) PRIMARY KEY,
     MuseumID INT NOT NULL,
     ExhibitionID INT NOT NULL,
+    StartDate DATE NOT NULL,
+    EndDate DATE NOT NULL
     CONSTRAINT FK_MuseumExhibition_Museum FOREIGN KEY (MuseumID) 
         REFERENCES Museum(MuseumID),
     CONSTRAINT FK_MuseumExhibition_Exhibition FOREIGN KEY (ExhibitionID) 
@@ -102,7 +102,6 @@ CREATE TABLE Ticket
     TicketID INT IDENTITY(10001,1) PRIMARY KEY,
     ExhibitionID INT NOT NULL,
     Type NVARCHAR(50) NOT NULL,
-    -- Добавили N перед строками в CHECK
     Status NVARCHAR(20) NOT NULL CHECK (Status IN (N'Доступен', N'Продан', N'Отменён')),
     AvailableQuantity INT NOT NULL CHECK (AvailableQuantity >= 0),
     CONSTRAINT FK_Ticket_Exhibition FOREIGN KEY (ExhibitionID)
@@ -117,6 +116,8 @@ CREATE TABLE TicketPrice
     TicketPriceID INT IDENTITY(10001,1) PRIMARY KEY,
     TicketID INT NOT NULL,
     Price MONEY NOT NULL CHECK (Price >= 0),
+    StartDate DATE NOT NULL,
+    EndDate DATE NOT NULL,
     CONSTRAINT FK_TicketPrice_Ticket FOREIGN KEY (TicketID) 
         REFERENCES Ticket(TicketID)
 );
@@ -132,7 +133,6 @@ CREATE TABLE [User]
     Email NVARCHAR(50) NOT NULL UNIQUE,
     Phone NVARCHAR(20) NULL,
     Password NVARCHAR(100) NOT NULL,
-    -- Добавили N в CHECK
     Role NVARCHAR(50) NOT NULL
         CHECK (Role IN (N'Гость', N'Посетитель', N'Администратор музея', N'Администратор системы'))
 );
@@ -144,7 +144,6 @@ CREATE TABLE [Order]
     OrderID INT IDENTITY(10001,1) PRIMARY KEY,
     UserID INT NOT NULL,
     OrderDate DATETIME NOT NULL DEFAULT GETDATE(),
-    -- Добавили N в CHECK
     Status NVARCHAR(50) NOT NULL CHECK (Status IN (N'В ожидании', N'Оплачен', N'Отменён')),
     CONSTRAINT FK_Order_User FOREIGN KEY (UserID) 
         REFERENCES [User](UserID)
@@ -158,6 +157,7 @@ CREATE TABLE OrderItem
     OrderID INT NOT NULL,
     TicketID INT NOT NULL,
     Quantity INT NOT NULL CHECK (Quantity > 0),
+    PriceAtPurchase MONEY NOT NULL,
     CONSTRAINT FK_OrderItem_Order FOREIGN KEY (OrderID) 
         REFERENCES [Order](OrderID),
     CONSTRAINT FK_OrderItem_Ticket FOREIGN KEY (TicketID) 

@@ -95,122 +95,102 @@
     {
       "ExhibitionID": 10001,
       "Name": "Шедевры Рембрандта",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10002,
       "Name": "Золото скифов",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10003,
       "Name": "Импрессионисты",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10004,
       "Name": "Искусство Востока",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10005,
       "Name": "Петровская эпоха",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10006,
       "Name": "История гвардии",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10007,
       "Name": "Архитектура барокко",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10008,
       "Name": "Быт аристократии",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10009,
       "Name": "Фарфоровая сказка",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10010,
       "Name": "Техника росписи",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10011,
       "Name": "Русская икона",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10012,
       "Name": "Передвижники",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10013,
       "Name": "Авангард XX века",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10014,
       "Name": "Современное искусство",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10015,
       "Name": "Портретная галерея",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10016,
       "Name": "Скульптура Летнего сада",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10017,
       "Name": "Интерьеры Строгановых",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10018,
       "Name": "Тайны замка",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10019,
       "Name": "Дар меценатов",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     },
     {
       "ExhibitionID": 10020,
       "Name": "Военная слава",
-      "StartDate": "2024-01-01",
-      "EndDate": "2026-12-31"
+      "Photo": null
     }
   ],
   "Tickets": [
@@ -499,280 +479,280 @@
     {
       "TicketPriceID": 10001,
       "TicketID": 10001,
-      "Price": 700.0,
+      "Price": 700,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10002,
       "TicketID": 10002,
-      "Price": 350.0,
+      "Price": 350,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10003,
       "TicketID": 10003,
-      "Price": 600.0,
+      "Price": 600,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10004,
       "TicketID": 10004,
-      "Price": 300.0,
+      "Price": 300,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10005,
       "TicketID": 10005,
-      "Price": 500.0,
+      "Price": 500,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10006,
       "TicketID": 10006,
-      "Price": 250.0,
+      "Price": 250,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10007,
       "TicketID": 10007,
-      "Price": 800.0,
+      "Price": 800,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10008,
       "TicketID": 10008,
-      "Price": 400.0,
+      "Price": 400,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10009,
       "TicketID": 10009,
-      "Price": 550.0,
+      "Price": 550,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10010,
       "TicketID": 10010,
-      "Price": 275.0,
+      "Price": 275,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10011,
       "TicketID": 10011,
-      "Price": 400.0,
+      "Price": 400,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10012,
       "TicketID": 10012,
-      "Price": 200.0,
+      "Price": 200,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10013,
       "TicketID": 10013,
-      "Price": 650.0,
+      "Price": 650,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10014,
       "TicketID": 10014,
-      "Price": 325.0,
+      "Price": 325,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10015,
       "TicketID": 10015,
-      "Price": 450.0,
+      "Price": 450,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10016,
       "TicketID": 10016,
-      "Price": 225.0,
+      "Price": 225,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10017,
       "TicketID": 10017,
-      "Price": 300.0,
+      "Price": 300,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10018,
       "TicketID": 10018,
-      "Price": 150.0,
+      "Price": 150,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10019,
       "TicketID": 10019,
-      "Price": 250.0,
+      "Price": 250,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10020,
       "TicketID": 10020,
-      "Price": 125.0,
+      "Price": 125,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10021,
       "TicketID": 10021,
-      "Price": 500.0,
+      "Price": 500,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10022,
       "TicketID": 10022,
-      "Price": 250.0,
+      "Price": 250,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10023,
       "TicketID": 10023,
-      "Price": 600.0,
+      "Price": 400,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10024,
       "TicketID": 10024,
-      "Price": 300.0,
+      "Price": 200,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10025,
       "TicketID": 10025,
-      "Price": 750.0,
+      "Price": 350,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10026,
       "TicketID": 10026,
-      "Price": 375.0,
+      "Price": 175,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10027,
       "TicketID": 10027,
-      "Price": 400.0,
+      "Price": 450,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10028,
       "TicketID": 10028,
-      "Price": 200.0,
+      "Price": 225,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10029,
       "TicketID": 10029,
-      "Price": 350.0,
+      "Price": 400,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10030,
       "TicketID": 10030,
-      "Price": 175.0,
+      "Price": 200,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10031,
       "TicketID": 10031,
-      "Price": 450.0,
+      "Price": 300,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10032,
       "TicketID": 10032,
-      "Price": 225.0,
+      "Price": 150,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10033,
       "TicketID": 10033,
-      "Price": 550.0,
+      "Price": 250,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10034,
       "TicketID": 10034,
-      "Price": 275.0,
+      "Price": 125,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10035,
       "TicketID": 10035,
-      "Price": 650.0,
+      "Price": 500,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10036,
       "TicketID": 10036,
-      "Price": 325.0,
+      "Price": 250,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10037,
       "TicketID": 10037,
-      "Price": 400.0,
+      "Price": 450,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10038,
       "TicketID": 10038,
-      "Price": 200.0,
+      "Price": 225,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10039,
       "TicketID": 10039,
-      "Price": 500.0,
+      "Price": 600,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     },
     {
       "TicketPriceID": 10040,
       "TicketID": 10040,
-      "Price": 250.0,
+      "Price": 300,
       "StartDate": "2024-01-01",
       "EndDate": "2026-12-31"
     }
