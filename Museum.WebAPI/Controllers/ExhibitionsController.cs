@@ -14,13 +14,5 @@ namespace Museum.WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<List<PublicExhibitionDTO>>> GetAll() =>
             Ok(await _service.GetAllAsync());
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PublicExhibitionDTO>> Get(int id)
-        {
-            var dto = await _service.GetByIdAsync(id);
-            if (dto == null) return NotFound();
-            return Ok(dto);
-        }
     }
 }

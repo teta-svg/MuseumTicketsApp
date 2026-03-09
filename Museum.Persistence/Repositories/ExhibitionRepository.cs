@@ -16,7 +16,7 @@ namespace Museum.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<List<Exhibition>> GetAllAsync()
+        public async Task<IEnumerable<Exhibition>> GetAllAsync()
         {
             return await _context.Exhibitions
                 .Include(e => e.MuseumExhibitions)
@@ -24,16 +24,6 @@ namespace Museum.Persistence.Repositories
                 .Include(e => e.Tickets)
                     .ThenInclude(t => t.TicketPrices)
                 .ToListAsync();
-        }
-
-        public async Task<Exhibition?> GetByIdAsync(int id)
-        {
-            return await _context.Exhibitions
-                .Include(e => e.MuseumExhibitions)
-                    .ThenInclude(me => me.Museum)
-                .Include(e => e.Tickets)
-                    .ThenInclude(t => t.TicketPrices)
-                .FirstOrDefaultAsync(e => e.ExhibitionId == id);
         }
     }
 }
