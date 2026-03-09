@@ -36,10 +36,14 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
 {
     public void Configure(EntityTypeBuilder<OrderItem> builder)
     {
-        builder.HasKey(e => e.OrderItemId).HasName("PK__OrderIte__57ED06A1628BAA09");
+        builder.HasKey(e => e.OrderItemId).HasName("PK_OrderItem");
+
+        builder.Property(e => e.PriceAtPurchase)
+               .HasColumnType("money")
+               .IsRequired();
 
         builder.HasOne(d => d.Order).WithMany(p => p.OrderItems)
-            .OnDelete(DeleteBehavior.ClientSetNull)
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName("FK_OrderItem_Order");
 
         builder.HasOne(d => d.Ticket).WithMany(p => p.OrderItems)
@@ -101,10 +105,15 @@ public class TicketPriceConfiguration : IEntityTypeConfiguration<TicketPrice>
 {
     public void Configure(EntityTypeBuilder<TicketPrice> builder)
     {
-        builder.HasKey(e => e.TicketPriceId).HasName("PK__TicketPr__BE7DED9CB222B746");
+        builder.HasKey(e => e.TicketPriceId).HasName("PK_TicketPrice");
+
+        builder.Property(e => e.Price).HasColumnType("money");
+
+        builder.Property(e => e.StartDate).IsRequired();
+        builder.Property(e => e.EndDate).IsRequired();
 
         builder.HasOne(d => d.Ticket).WithMany(p => p.TicketPrices)
-            .OnDelete(DeleteBehavior.ClientSetNull)
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName("FK_TicketPrice_Ticket");
     }
 }

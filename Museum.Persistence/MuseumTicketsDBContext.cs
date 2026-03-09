@@ -34,6 +34,8 @@ public partial class MuseumTicketsDBContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(MuseumTicketsDBContext).Assembly);
+
         modelBuilder.Entity<User>().HasData(new User //админ
         {
             UserId = 10001,
@@ -52,17 +54,24 @@ public partial class MuseumTicketsDBContext : DbContext
 
         if (File.Exists(jsonPath))
         {
-            var json = File.ReadAllText(jsonPath);
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var data = JsonSerializer.Deserialize<SeedDataWrapper>(json, options);
-
-            if (data != null)
+            try
             {
-                modelBuilder.Entity<MuseumComplex>().HasData(data.MuseumComplexes);
-                modelBuilder.Entity<MuseumEntity>().HasData(data.Museums);
-                modelBuilder.Entity<Exhibition>().HasData(data.Exhibitions);
-                modelBuilder.Entity<Ticket>().HasData(data.Tickets);
-                modelBuilder.Entity<TicketPrice>().HasData(data.TicketPrices);
+                var json = File.ReadAllText(jsonPath);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var data = JsonSerializer.Deserialize<SeedDataWrapper>(json, options);
+
+                if (data != null)
+                {
+                    modelBuilder.Entity<MuseumComplex>().HasData(data.MuseumComplexes);
+                    modelBuilder.Entity<MuseumEntity>().HasData(data.Museums);
+                    modelBuilder.Entity<Exhibition>().HasData(data.Exhibitions);
+                    modelBuilder.Entity<Ticket>().HasData(data.Tickets);
+                    modelBuilder.Entity<TicketPrice>().HasData(data.TicketPrices);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка загрузки сидов: {ex.Message}");
             }
         }
     }

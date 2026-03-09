@@ -21,6 +21,9 @@ public partial class OrderItem
 
     public int Quantity { get; set; }
 
+    [Column(TypeName = "money")]
+    public decimal PriceAtPurchase { get; set; }
+
     [ForeignKey("OrderId")]
     [InverseProperty("OrderItems")]
     public virtual Order Order { get; set; } = null!;
