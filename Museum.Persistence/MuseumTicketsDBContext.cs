@@ -47,32 +47,5 @@ public partial class MuseumTicketsDBContext : DbContext
             Phone = "+70000000000",
             Role = "Администратор системы"
         });
-
-        var fileName = "seed.json";
-
-        var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
-
-        if (File.Exists(jsonPath))
-        {
-            try
-            {
-                var json = File.ReadAllText(jsonPath);
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var data = JsonSerializer.Deserialize<SeedDataWrapper>(json, options);
-
-                if (data != null)
-                {
-                    modelBuilder.Entity<MuseumComplex>().HasData(data.MuseumComplexes);
-                    modelBuilder.Entity<MuseumEntity>().HasData(data.Museums);
-                    modelBuilder.Entity<Exhibition>().HasData(data.Exhibitions);
-                    modelBuilder.Entity<Ticket>().HasData(data.Tickets);
-                    modelBuilder.Entity<TicketPrice>().HasData(data.TicketPrices);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка загрузки сидов: {ex.Message}");
-            }
-        }
     }
 }

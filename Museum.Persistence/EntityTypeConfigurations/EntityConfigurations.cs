@@ -2,126 +2,224 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Museum.Domain;
 
-namespace Museum.Persistence.Configurations;
-
-public class ExhibitionConfiguration : IEntityTypeConfiguration<Exhibition>
+namespace Museum.Persistence.Configurations
 {
-    public void Configure(EntityTypeBuilder<Exhibition> builder)
+    public class MuseumComplexConfiguration : IEntityTypeConfiguration<MuseumComplex>
     {
-        builder.HasKey(e => e.ExhibitionId).HasName("PK__Exhibiti__32CDCC7E11D9447A");
+        public void Configure(EntityTypeBuilder<MuseumComplex> builder)
+        {
+            builder.HasKey(e => e.MuseumComplexId);
+            builder.Property(e => e.MuseumComplexId)
+                   .UseIdentityColumn(10001, 1);
+
+            builder.Property(e => e.Name).HasMaxLength(255).IsRequired();
+        }
     }
-}
 
-public class MuseumComplexConfiguration : IEntityTypeConfiguration<MuseumComplex>
-{
-    public void Configure(EntityTypeBuilder<MuseumComplex> builder)
+    public class MuseumConfiguration : IEntityTypeConfiguration<Museum.Domain.Museum>
     {
-        builder.HasKey(e => e.MuseumComplexId).HasName("PK__MuseumCo__A3CAC08F0770D3AD");
+        public void Configure(EntityTypeBuilder<Museum.Domain.Museum> builder)
+        {
+            builder.HasKey(e => e.MuseumId);
+            builder.Property(e => e.MuseumId)
+                   .UseIdentityColumn(10001, 1);
+
+            builder.Property(e => e.Name).HasMaxLength(255).IsRequired();
+            builder.Property(e => e.City).HasMaxLength(50).IsRequired();
+            builder.Property(e => e.Street).HasMaxLength(50).IsRequired();
+            builder.Property(e => e.House).HasMaxLength(5).IsRequired();
+
+            builder.HasOne(e => e.MuseumComplex)
+                   .WithMany(c => c.Museums)
+                   .HasForeignKey(e => e.MuseumComplexId)
+                   .OnDelete(DeleteBehavior.Cascade);
+        }
     }
-}
 
-public class MuseumScheduleConfiguration : IEntityTypeConfiguration<MuseumSchedule>
-{
-    public void Configure(EntityTypeBuilder<MuseumSchedule> builder)
+    public class MuseumScheduleConfiguration : IEntityTypeConfiguration<MuseumSchedule>
     {
-        builder.HasKey(e => e.MuseumScheduleId).HasName("PK__MuseumSc__73D1CB814906902D");
+        public void Configure(EntityTypeBuilder<MuseumSchedule> builder)
+        {
+            builder.HasKey(e => e.MuseumScheduleId);
+            builder.Property(e => e.MuseumScheduleId)
+                   .UseIdentityColumn(10001, 1);
 
-        builder.HasOne(d => d.Museum).WithMany(p => p.MuseumSchedules)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("FK_MuseumSchedule_Museum");
+            builder.HasOne(e => e.Museum)
+                   .WithMany(m => m.MuseumSchedules)
+                   .HasForeignKey(e => e.MuseumId)
+                   .OnDelete(DeleteBehavior.Cascade);
+        }
     }
-}
-
-public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
-{
-    public void Configure(EntityTypeBuilder<OrderItem> builder)
+    public class ScheduleDayConfiguration : IEntityTypeConfiguration<ScheduleDay>
     {
-        builder.HasKey(e => e.OrderItemId).HasName("PK_OrderItem");
+        public void Configure(EntityTypeBuilder<ScheduleDay> builder)
+        {
+            builder.HasKey(e => e.ScheduleDaysId);
+            builder.Property(e => e.ScheduleDaysId)
+                   .UseIdentityColumn(10001, 1);
 
-        builder.Property(e => e.PriceAtPurchase)
-               .HasColumnType("money")
-               .IsRequired();
+            builder.HasOne(e => e.MuseumSchedule)
+                   .WithMany(s => s.ScheduleDays)
+                   .HasForeignKey(e => e.MuseumScheduleId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(d => d.Order).WithMany(p => p.OrderItems)
-            .OnDelete(DeleteBehavior.Cascade)
-            .HasConstraintName("FK_OrderItem_Order");
-
-        builder.HasOne(d => d.Ticket).WithMany(p => p.OrderItems)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("FK_OrderItem_Ticket");
+            builder.HasCheckConstraint("CHK_ScheduleDays_WeekDay", "[WeekDay] BETWEEN 1 AND 7");
+        }
     }
-}
-
-public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
-{
-    public void Configure(EntityTypeBuilder<Payment> builder)
+    public class ScheduleExceptionConfiguration : IEntityTypeConfiguration<ScheduleException>
     {
-        builder.HasKey(e => e.PaymentId).HasName("PK__Payment__9B556A586B1F2D8A");
-        builder.Property(e => e.PaymentDate).HasDefaultValueSql("(getdate())");
+        public void Configure(EntityTypeBuilder<ScheduleException> builder)
+        {
+            builder.HasKey(e => e.ScheduleExceptionsId);
+            builder.Property(e => e.ScheduleExceptionsId)
+                   .UseIdentityColumn(10001, 1);
 
-        builder.HasOne(d => d.Order).WithMany(p => p.Payments)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("FK_Payment_Order");
+            builder.HasOne(e => e.MuseumSchedule)
+                   .WithMany(s => s.ScheduleExceptions)
+                   .HasForeignKey(e => e.MuseumScheduleId)
+                   .OnDelete(DeleteBehavior.Cascade);
+        }
     }
-}
-
-public class ScheduleDayConfiguration : IEntityTypeConfiguration<ScheduleDay>
-{
-    public void Configure(EntityTypeBuilder<ScheduleDay> builder)
+    public class ExhibitionConfiguration : IEntityTypeConfiguration<Exhibition>
     {
-        builder.HasKey(e => e.ScheduleDaysId).HasName("PK__Schedule__3931B0C8E716E7FB");
+        public void Configure(EntityTypeBuilder<Exhibition> builder)
+        {
+            builder.HasKey(e => e.ExhibitionId);
+            builder.Property(e => e.ExhibitionId)
+                   .UseIdentityColumn(10001, 1);
 
-        builder.HasOne(d => d.MuseumSchedule).WithMany(p => p.ScheduleDays)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("FK_ScheduleDays_MuseumSchedule");
+            builder.Property(e => e.Name).HasMaxLength(255).IsRequired();
+            builder.Property(e => e.Photo).HasMaxLength(255);
+        }
     }
-}
-
-public class ScheduleExceptionConfiguration : IEntityTypeConfiguration<ScheduleException>
-{
-    public void Configure(EntityTypeBuilder<ScheduleException> builder)
+    public class MuseumExhibitionConfiguration : IEntityTypeConfiguration<MuseumExhibition>
     {
-        builder.HasKey(e => e.ScheduleExceptionsId).HasName("PK__Schedule__F7A1D11AFE31A9F7");
+        public void Configure(EntityTypeBuilder<MuseumExhibition> builder)
+        {
+            builder.HasKey(e => e.MuseumExhibitionId);
+            builder.Property(e => e.MuseumExhibitionId)
+                   .UseIdentityColumn(10001, 1);
 
-        builder.HasOne(d => d.MuseumSchedule).WithMany(p => p.ScheduleExceptions)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("FK_ScheduleExceptions_MuseumSchedule");
+            builder.HasOne(e => e.Museum)
+                   .WithMany(m => m.MuseumExhibitions)
+                   .HasForeignKey(e => e.MuseumId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(e => e.Exhibition)
+                   .WithMany(x => x.MuseumExhibitions)
+                   .HasForeignKey(e => e.ExhibitionId)
+                   .OnDelete(DeleteBehavior.Cascade);
+        }
     }
-}
-
-public class TicketConfiguration : IEntityTypeConfiguration<Ticket>
-{
-    public void Configure(EntityTypeBuilder<Ticket> builder)
+    public class TicketConfiguration : IEntityTypeConfiguration<Ticket>
     {
-        builder.HasKey(e => e.TicketId).HasName("PK__Ticket__712CC627E81D9F5E");
+        public void Configure(EntityTypeBuilder<Ticket> builder)
+        {
+            builder.HasKey(e => e.TicketId);
+            builder.Property(e => e.TicketId)
+                   .UseIdentityColumn(10001, 1);
 
-        builder.HasOne(d => d.Exhibition).WithMany(p => p.Tickets)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("FK_Ticket_Exhibition");
+            builder.Property(e => e.Type).HasMaxLength(50).IsRequired();
+            builder.Property(e => e.Status).HasMaxLength(20).IsRequired();
+            builder.HasCheckConstraint("CHK_Ticket_Status", "[Status] IN (N'Доступен', N'Продан', N'Отменён')");
+            builder.Property(e => e.AvailableQuantity).IsRequired();
+            builder.HasCheckConstraint("CHK_Ticket_Quantity", "[AvailableQuantity] >= 0");
+
+            builder.HasOne(e => e.Exhibition)
+                   .WithMany(x => x.Tickets)
+                   .HasForeignKey(e => e.ExhibitionId)
+                   .OnDelete(DeleteBehavior.Cascade);
+        }
     }
-}
-
-public class TicketPriceConfiguration : IEntityTypeConfiguration<TicketPrice>
-{
-    public void Configure(EntityTypeBuilder<TicketPrice> builder)
+    public class TicketPriceConfiguration : IEntityTypeConfiguration<TicketPrice>
     {
-        builder.HasKey(e => e.TicketPriceId).HasName("PK_TicketPrice");
+        public void Configure(EntityTypeBuilder<TicketPrice> builder)
+        {
+            builder.HasKey(e => e.TicketPriceId);
+            builder.Property(e => e.TicketPriceId)
+                   .UseIdentityColumn(10001, 1);
 
-        builder.Property(e => e.Price).HasColumnType("money");
+            builder.Property(e => e.Price).HasColumnType("money").IsRequired();
+            builder.HasCheckConstraint("CHK_TicketPrice_Price", "[Price] >= 0");
 
-        builder.Property(e => e.StartDate).IsRequired();
-        builder.Property(e => e.EndDate).IsRequired();
-
-        builder.HasOne(d => d.Ticket).WithMany(p => p.TicketPrices)
-            .OnDelete(DeleteBehavior.Cascade)
-            .HasConstraintName("FK_TicketPrice_Ticket");
+            builder.HasOne(e => e.Ticket)
+                   .WithMany(t => t.TicketPrices)
+                   .HasForeignKey(e => e.TicketId)
+                   .OnDelete(DeleteBehavior.Cascade);
+        }
     }
-}
-
-public class UserConfiguration : IEntityTypeConfiguration<User>
-{
-    public void Configure(EntityTypeBuilder<User> builder)
+    public class UserConfiguration : IEntityTypeConfiguration<User>
     {
-        builder.HasKey(e => e.UserId).HasName("PK__User__1788CCAC6180EAAA");
+        public void Configure(EntityTypeBuilder<User> builder)
+        {
+            builder.HasKey(e => e.UserId);
+            builder.Property(e => e.UserId)
+                   .UseIdentityColumn(10001, 1);
+
+            builder.Property(e => e.LastName).HasMaxLength(50).IsRequired();
+            builder.Property(e => e.FirstName).HasMaxLength(50).IsRequired();
+            builder.Property(e => e.MiddleName).HasMaxLength(50);
+            builder.Property(e => e.Email).HasMaxLength(50).IsRequired();
+            builder.Property(e => e.Phone).HasMaxLength(20);
+            builder.Property(e => e.Password).HasMaxLength(100).IsRequired();
+            builder.Property(e => e.Role).HasMaxLength(50).IsRequired();
+            builder.HasCheckConstraint("CHK_User_Role", "[Role] IN (N'Гость', N'Посетитель', N'Администратор музея', N'Администратор системы')");
+        }
+    }
+    public class OrderConfiguration : IEntityTypeConfiguration<Order>
+    {
+        public void Configure(EntityTypeBuilder<Order> builder)
+        {
+            builder.HasKey(e => e.OrderId);
+            builder.Property(e => e.OrderId)
+                   .UseIdentityColumn(10001, 1);
+
+            builder.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            builder.HasCheckConstraint("CHK_Order_Status", "[Status] IN (N'В ожидании', N'Оплачен', N'Отменён')");
+
+            builder.HasOne(e => e.User)
+                   .WithMany(u => u.Orders)
+                   .HasForeignKey(e => e.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+    public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
+    {
+        public void Configure(EntityTypeBuilder<OrderItem> builder)
+        {
+            builder.HasKey(e => e.OrderItemId);
+            builder.Property(e => e.OrderItemId)
+                   .UseIdentityColumn(10001, 1);
+
+            builder.Property(e => e.Quantity).IsRequired();
+            builder.HasCheckConstraint("CHK_OrderItem_Quantity", "[Quantity] > 0");
+
+            builder.HasOne(e => e.Order)
+                   .WithMany(o => o.OrderItems)
+                   .HasForeignKey(e => e.OrderId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(e => e.Ticket)
+                   .WithMany(t => t.OrderItems)
+                   .HasForeignKey(e => e.TicketId)
+                   .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+    public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
+    {
+        public void Configure(EntityTypeBuilder<Payment> builder)
+        {
+            builder.HasKey(e => e.PaymentId);
+            builder.Property(e => e.PaymentId)
+                   .UseIdentityColumn(10001, 1);
+
+            builder.Property(e => e.Amount).HasColumnType("money").IsRequired();
+            builder.HasCheckConstraint("CHK_Payment_Amount", "[Amount] >= 0");
+
+            builder.HasOne(e => e.Order)
+                   .WithMany(o => o.Payments)
+                   .HasForeignKey(e => e.OrderId)
+                   .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

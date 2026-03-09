@@ -1,80 +1,46 @@
-﻿using Azure.Core;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Museum.Application.Interfaces;
 using Museum.Domain;
-using Museum.Persistence;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Museum.Application.Services;
-
 public class AuthService : IAuthService
 {
-    private readonly MuseumTicketsDBContext _context; //доступ к БД
+    private readonly IUserRepository _userRepo;
     private readonly IConfiguration _configuration;
     private readonly IPasswordHasher _passwordHasher;
 
     public AuthService(
-        MuseumTicketsDBContext context,
+        IUserRepository userRepo,
         IConfiguration configuration,
         IPasswordHasher passwordHasher)
     {
-        _context = context;
+        _userRepo = userRepo;
         _configuration = configuration;
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<string> Login(string username, string password)
+    public async Task<string?> LoginAsync(string email, string password)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == username);
+        var user = await _userRepo.GetByEmailAsync(email);
 
         if (user == null || !_passwordHasher.VerifyPassword(password, user.Password))
             return null;
 
-        return GenerateToken(user.Email, user.Role);
+        return GenerateJwtToken(user);
     }
 
-    private string GenerateToken(string username, string role)
+    public async Task RegisterAsync(RegisterRequest request)
     {
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, username),
-            new Claim(ClaimTypes.Role, role),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddHours(2), //действителен 2 часа
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
-    public async Task Register(RegisterRequest request)
-    {
-        var existingUser = await _context.Users.AnyAsync(u => u.Email == request.Email);
-        if (existingUser)
-        {
-            throw new Exception("Пользователь с такой почтой уже существует");
-        }
-
-        string hashedPassword = _passwordHasher.HashPassword(request.Password);
+        if (await _userRepo.GetByEmailAsync(request.Email) != null)
+            throw new InvalidOperationException("Пользователь с такой почтой уже существует");
 
         var user = new User
         {
             Email = request.Email,
-            Password = hashedPassword,
+            Password = _passwordHasher.HashPassword(request.Password),
             FirstName = request.FirstName,
             LastName = request.LastName,
             MiddleName = request.MiddleName,
@@ -82,8 +48,33 @@ public class AuthService : IAuthService
             Role = "Посетитель"
         };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        await _userRepo.AddAsync(user);
+        await _userRepo.SaveChangesAsync();
     }
 
+    private string GenerateJwtToken(User user)
+    {
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key not configured"))
+        );
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(2),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
 }

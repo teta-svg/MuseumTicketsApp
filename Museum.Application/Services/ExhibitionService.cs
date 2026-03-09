@@ -1,31 +1,60 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Museum.Application.Interfaces;
 using Museum.Application.DTOs;
-using Museum.Persistence;
 
 namespace Museum.Application.Services;
 
 public class ExhibitionService : IExhibitionService
 {
-    private readonly MuseumTicketsDBContext _context;
+    private readonly IExhibitionRepository _repository;
 
-    public ExhibitionService(MuseumTicketsDBContext context) => _context = context;
-
-    public async Task<IEnumerable<ExhibitionDto>> GetAllExhibitionsAsync()
+    public ExhibitionService(IExhibitionRepository repository)
     {
-        var exhibitions = await _context.Exhibitions
-            .Include(e => e.MuseumExhibitions).ThenInclude(me => me.Museum)
-            .Include(e => e.Tickets).ThenInclude(t => t.TicketPrices)
-            .ToListAsync();
+        _repository = repository;
+    }
 
-        return exhibitions.Select(e => new ExhibitionDto
+    public async Task<List<PublicExhibitionDTO>> GetAllAsync()
+    {
+        var exhibitions = await _repository.GetAllAsync();
+
+        return exhibitions.Select(e => new PublicExhibitionDTO
         {
-            Id = e.ExhibitionId,
+            ExhibitionID = e.ExhibitionId,
             Name = e.Name,
             Photo = e.Photo,
-            MuseumName = e.MuseumExhibitions.FirstOrDefault()?.Museum.Name ?? "Музей",
-            Price = e.Tickets.FirstOrDefault()?.TicketPrices.FirstOrDefault()?.Price ?? 0
-        });
+            MuseumName = e.MuseumExhibitions.FirstOrDefault()?.Museum.Name ?? "",
+            StartDate = e.MuseumExhibitions?.Any() == true
+                ? e.MuseumExhibitions.Min(me => me.StartDate).ToDateTime(TimeOnly.MinValue)
+                : DateTime.MinValue,
+            EndDate = e.MuseumExhibitions?.Any() == true
+                ? e.MuseumExhibitions.Max(me => me.EndDate).ToDateTime(TimeOnly.MinValue)
+                : DateTime.MinValue,
+            MinPrice = e.Tickets?.Where(t => t.TicketPrices.Any()).Any() == true
+                ? e.Tickets.Where(t => t.TicketPrices.Any()).Min(t => t.TicketPrices.Min(tp => tp.Price))
+                : 0m
+        }).ToList();
+    }
+
+    public async Task<PublicExhibitionDTO?> GetByIdAsync(int exhibitionId)
+    {
+        var e = await _repository.GetByIdAsync(exhibitionId);
+        if (e == null) return null;
+
+        return new PublicExhibitionDTO
+        {
+            ExhibitionID = e.ExhibitionId,
+            Name = e.Name,
+            Photo = e.Photo,
+            MuseumName = e.MuseumExhibitions.First().Museum.Name,
+            StartDate = e.MuseumExhibitions?.Any() == true
+                ? e.MuseumExhibitions.Min(me => me.StartDate).ToDateTime(TimeOnly.MinValue)
+                : DateTime.MinValue,
+            EndDate = e.MuseumExhibitions?.Any() == true
+                ? e.MuseumExhibitions.Max(me => me.EndDate).ToDateTime(TimeOnly.MinValue)
+                : DateTime.MinValue,
+            MinPrice = e.Tickets?.Where(t => t.TicketPrices.Any()).Any() == true
+                ? e.Tickets.Where(t => t.TicketPrices.Any()).Min(t => t.TicketPrices.Min(tp => tp.Price))
+                : 0m
+        };
     }
 }
-
