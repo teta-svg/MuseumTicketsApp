@@ -12,8 +12,8 @@ using Museum.Persistence;
 namespace Museum.Persistence.Migrations
 {
     [DbContext(typeof(MuseumTicketsDBContext))]
-    [Migration("20260309192617_AddNewExhibitionsAndTickets")]
-    partial class AddNewExhibitionsAndTickets
+    [Migration("20260309195546_Fix")]
+    partial class Fix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

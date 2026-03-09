@@ -9,10 +9,18 @@ namespace Museum.WebAPI.Controllers
     public class ExhibitionsController : ControllerBase
     {
         private readonly IExhibitionService _service;
+
         public ExhibitionsController(IExhibitionService service) => _service = service;
 
         [HttpGet]
         public async Task<ActionResult<List<PublicExhibitionDTO>>> GetAll() =>
             Ok(await _service.GetAllAsync());
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetFiltered([FromQuery] ExhibitionFilterDto filter)
+        {
+            var exhibitions = await _service.GetFilteredAsync(filter);
+            return Ok(exhibitions);
+        }
     }
 }

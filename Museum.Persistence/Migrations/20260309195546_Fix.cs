@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Museum.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Fix : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -96,12 +96,13 @@ namespace Museum.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Museum__C10D28D294428B64", x => x.MuseumID);
+                    table.PrimaryKey("PK_Museum", x => x.MuseumID);
                     table.ForeignKey(
-                        name: "FK_Museum_MuseumComplex",
+                        name: "FK_Museum_MuseumComplex_MuseumComplexID",
                         column: x => x.MuseumComplexID,
                         principalTable: "MuseumComplex",
-                        principalColumn: "MuseumComplexID");
+                        principalColumn: "MuseumComplexID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -111,18 +112,19 @@ namespace Museum.Persistence.Migrations
                     OrderID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "10001, 1"),
                     UserID = table.Column<int>(type: "int", nullable: false),
-                    OrderDate = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())"),
+                    OrderDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Order__C3905BAFC6F99E8E", x => x.OrderID);
+                    table.PrimaryKey("PK_Order", x => x.OrderID);
                     table.CheckConstraint("CHK_Order_Status", "[Status] IN (N'В ожидании', N'Оплачен', N'Отменён')");
                     table.ForeignKey(
-                        name: "FK_Order_User",
+                        name: "FK_Order_User_UserID",
                         column: x => x.UserID,
                         principalTable: "User",
-                        principalColumn: "UserID");
+                        principalColumn: "UserID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -161,17 +163,19 @@ namespace Museum.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__MuseumEx__8C9BE304C8B2B2E5", x => x.MuseumExhibitionID);
+                    table.PrimaryKey("PK_MuseumExhibition", x => x.MuseumExhibitionID);
                     table.ForeignKey(
-                        name: "FK_MuseumExhibition_Exhibition",
+                        name: "FK_MuseumExhibition_Exhibition_ExhibitionID",
                         column: x => x.ExhibitionID,
                         principalTable: "Exhibition",
-                        principalColumn: "ExhibitionID");
+                        principalColumn: "ExhibitionID",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MuseumExhibition_Museum",
+                        name: "FK_MuseumExhibition_Museum_MuseumID",
                         column: x => x.MuseumID,
                         principalTable: "Museum",
-                        principalColumn: "MuseumID");
+                        principalColumn: "MuseumID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

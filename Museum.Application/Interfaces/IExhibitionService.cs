@@ -5,4 +5,5 @@ namespace Museum.Application.Interfaces;
 public interface IExhibitionService
 {
     Task<List<PublicExhibitionDTO>> GetAllAsync();
+    Task<List<PublicExhibitionDTO>> GetFilteredAsync(ExhibitionFilterDto filter);
 }
