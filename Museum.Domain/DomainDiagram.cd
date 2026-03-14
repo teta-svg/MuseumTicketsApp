@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Museum.Domain.Exhibition">
+    <Position X="3.25" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAACAAAAAAAAQAAAAAEAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Exhibition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.Museum">
+    <Position X="10" Y="3.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIAAAAAAQAgAAAEAAEEAICAAAAAAA=</HashCode>
+      <FileName>Museum.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.MuseumComplex">
+    <Position X="0.75" Y="4" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAACAAAQAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>MuseumComplex.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.MuseumExhibition">
+    <Position X="12.25" Y="4" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAAAAAAAAAggABAAAQAAAQAAEAAAAA=</HashCode>
+      <FileName>MuseumExhibition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.MuseumSchedule">
+    <Position X="5.25" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAgAAAAAwgABAAAAAAAAAIEBAAAA=</HashCode>
+      <FileName>MuseumSchedule.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.Order">
+    <Position X="3.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>GAABAAAEAAFAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Order.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.OrderItem">
+    <Position X="7" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAEAAAAAAAAAAAACAAAAAAAAAAQAABAAAAAAgAAAIAA=</HashCode>
+      <FileName>OrderItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.Payment">
+    <Position X="3.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAEAAAAAAAEAAAAAAAAAAACAAgAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Payment.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.ScheduleDay">
+    <Position X="5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAABAAAAAAAAgAAAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>ScheduleDay.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.ScheduleException">
+    <Position X="9" Y="1" Width="2" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAJAAAAgAAAAAAAAAAAAAEAAAAIAAAABA=</HashCode>
+      <FileName>ScheduleException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.Ticket">
+    <Position X="7.75" Y="3.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAkCAAAAAAAAgAAAAAAAABQAAQAAAAAAAAA=</HashCode>
+      <FileName>Ticket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.TicketPrice">
+    <Position X="11.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAACAAAAAAAgAAAAABAgAAAAAEAAAAA=</HashCode>
+      <FileName>TicketPrice.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Museum.Domain.User">
+    <Position X="1.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAEAAACAAAAAAEAAQAAgAAAAAAAACAAAAIAAAAAg=</HashCode>
+      <FileName>User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
