@@ -79,5 +79,15 @@ namespace Museum.Persistence.Repositories
 
             return await query.ToListAsync();
         }
+
+        public async Task<Exhibition?> GetByIdAsync(int id)
+        {
+            return await _context.Exhibitions
+                .Include(e => e.MuseumExhibitions)
+                    .ThenInclude(me => me.Museum)
+                .Include(e => e.Tickets)
+                    .ThenInclude(t => t.TicketPrices)
+                .FirstOrDefaultAsync(e => e.ExhibitionId == id);
+        }
     }
 }

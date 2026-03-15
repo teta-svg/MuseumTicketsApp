@@ -42,4 +42,32 @@ public class ExhibitionService : IExhibitionService
         var exhibitions = await _repository.GetFilteredAsync(filter);
         return exhibitions.Select(ToDto).ToList();
     }
+
+    public async Task<ExhibitionDetailsDTO?> GetByIdAsync(int id)
+    {
+        var exhibition = await _repository.GetByIdAsync(id);
+        if (exhibition == null) return null;
+
+        return new ExhibitionDetailsDTO
+        {
+            ExhibitionID = exhibition.ExhibitionId,
+            Name = exhibition.Name,
+            Photo = exhibition.Photo,
+            MuseumName = exhibition.MuseumExhibitions.FirstOrDefault()?.Museum.Name ?? "",
+            StartDate = exhibition.MuseumExhibitions.Any()
+                ? exhibition.MuseumExhibitions.Min(me => me.StartDate).ToDateTime(TimeOnly.MinValue)
+                : DateTime.MinValue,
+            EndDate = exhibition.MuseumExhibitions.Any()
+                ? exhibition.MuseumExhibitions.Max(me => me.EndDate).ToDateTime(TimeOnly.MinValue)
+                : DateTime.MinValue,
+            MinPrice = exhibition.Tickets.Where(t => t.TicketPrices.Any()).Any()
+                ? exhibition.Tickets.Where(t => t.TicketPrices.Any()).Min(t => t.TicketPrices.Min(tp => tp.Price))
+                : 0m,
+            Tickets = exhibition.Tickets.SelectMany(t => t.TicketPrices.Select(tp => new TicketInfoDTO
+            {
+                Type = t.Type,
+                Price = tp.Price
+            })).ToList()
+        };
+    }
 }

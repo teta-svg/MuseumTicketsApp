@@ -11,5 +11,6 @@ namespace Museum.Application.Interfaces
     {
         Task<IEnumerable<Exhibition>> GetAllAsync();
         Task<IEnumerable<Exhibition>> GetFilteredAsync(ExhibitionFilterDto filter);
+        Task<Exhibition?> GetByIdAsync(int id);
     }
 }

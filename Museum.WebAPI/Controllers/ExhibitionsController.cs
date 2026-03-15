@@ -22,5 +22,14 @@ namespace Museum.WebAPI.Controllers
             var exhibitions = await _service.GetFilteredAsync(filter);
             return Ok(exhibitions);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var exhibition = await _service.GetByIdAsync(id);
+            if (exhibition == null) return NotFound(new { message = "Exhibition not found" });
+
+            return Ok(exhibition);
+        }
     }
 }
