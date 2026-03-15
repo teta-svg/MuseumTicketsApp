@@ -112,5 +112,39 @@ namespace Museum.Persistence.Repositories
                 }).ToList()
             }).ToList();
         }
+
+        public async Task UpdateOrderStatusAsync(int orderId, string status)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+                throw new InvalidOperationException("Заказ не найден");
+
+            order.Status = status;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<OrderDto?> GetOrderByIdAsync(int orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Ticket)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order == null) return null;
+
+            return new OrderDto
+            {
+                OrderId = order.OrderId,
+                CreatedAt = order.OrderDate,
+                Status = order.Status,
+                Tickets = order.OrderItems.Select(oi => new OrderTicketDto
+                {
+                    TicketId = oi.TicketId,
+                    Quantity = oi.Quantity,
+                    Price = oi.PriceAtPurchase,
+                    TicketType = oi.Ticket.Type
+                }).ToList()
+            };
+        }
     }
 }

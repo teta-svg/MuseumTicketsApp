@@ -70,7 +70,7 @@ namespace Museum.WebAPI.Controllers
         [HttpPost("test-create")]
         public async Task<IActionResult> CreateOrderTest([FromBody] CreateOrderDto createOrderDto)
         {
-            string testJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMDAyIiwic3ViIjoic3RyaW5nIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoi0J_QvtGB0LXRgtC40YLQtdC70YwiLCJqdGkiOiIxMTQ4NmE5Zi1lYzljLTQwNDAtYmU1Mi1hYTgxNjY5ZjEzOWEiLCJleHAiOjE3NzM1OTQ1NTAsImlzcyI6Ik11c2V1bUFwaSIsImF1ZCI6Ik11c2V1bUNsaWVudCJ9.uQg1I-S8yHGyYuSzsPdhiiCSJQB0z6rH7j88MdunLSA";
+            string testJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMDAyIiwic3ViIjoic3RyaW5nIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoi0J_QvtGB0LXRgtC40YLQtdC70YwiLCJqdGkiOiIyOWRmY2M4Yi05MThmLTQxZmQtOGNhNC1hYzJjNzc1ZGY5NjUiLCJleHAiOjE3NzM2MDI3MTUsImlzcyI6Ik11c2V1bUFwaSIsImF1ZCI6Ik11c2V1bUNsaWVudCJ9.zBoKy4kcSDhpie9M_2l2YYt6Xzqwtc1nnqbVAhaaPw8";
 
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(testJwt);
@@ -98,7 +98,7 @@ namespace Museum.WebAPI.Controllers
         [HttpGet("test-my-orders")]
         public async Task<IActionResult> GetMyOrdersTest()
         {
-            string testJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMDAyIiwic3ViIjoic3RyaW5nIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoi0J_QvtGB0LXRgtC40YLQtdC70YwiLCJqdGkiOiIxMTQ4NmE5Zi1lYzljLTQwNDAtYmU1Mi1hYTgxNjY5ZjEzOWEiLCJleHAiOjE3NzM1OTQ1NTAsImlzcyI6Ik11c2V1bUFwaSIsImF1ZCI6Ik11c2V1bUNsaWVudCJ9.uQg1I-S8yHGyYuSzsPdhiiCSJQB0z6rH7j88MdunLSA";
+            string testJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMDAyIiwic3ViIjoic3RyaW5nIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoi0J_QvtGB0LXRgtC40YLQtdC70YwiLCJqdGkiOiIyOWRmY2M4Yi05MThmLTQxZmQtOGNhNC1hYzJjNzc1ZGY5NjUiLCJleHAiOjE3NzM2MDI3MTUsImlzcyI6Ik11c2V1bUFwaSIsImF1ZCI6Ik11c2V1bUNsaWVudCJ9.zBoKy4kcSDhpie9M_2l2YYt6Xzqwtc1nnqbVAhaaPw8";
 
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(testJwt);
