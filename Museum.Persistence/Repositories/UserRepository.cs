@@ -27,5 +27,15 @@ namespace Museum.Persistence.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public void Delete(User user)
+        {
+            _context.Users.Remove(user);
+        }
+
+        public async Task<List<User>> GetAllAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
     }
 }

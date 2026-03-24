@@ -36,16 +36,29 @@ public partial class MuseumTicketsDBContext : DbContext
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MuseumTicketsDBContext).Assembly);
 
-        modelBuilder.Entity<User>().HasData(new User //админ
-        {
-            UserId = 10001,
-            LastName = "Админов",
-            FirstName = "Петр",
-            MiddleName = "Петрович",
-            Email = "admin@museum.ru",
-            Password = "$2a$11$0NR8Ir7eg9MNV9VFQsudROSeSoRodME7UsMzNNfmLla/e/gLzQyuK", //AdminPassword123!
-            Phone = "+70000000000",
-            Role = "Администратор системы"
-        });
+        modelBuilder.Entity<User>().HasData(
+    new User // Администратор системы
+    {
+        UserId = 10001,
+        LastName = "Админов",
+        FirstName = "Петр",
+        MiddleName = "Петрович",
+        Email = "sysadmin@museum.ru",
+        Password = "$2a$11$0NR8Ir7eg9MNV9VFQsudROSeSoRodME7UsMzNNfmLla/e/gLzQyuK", // AdminPassword123!
+        Phone = "+70000000001",
+        Role = "Администратор системы"
+    },
+    new User // Администратор музея
+    {
+        UserId = 10002,
+        LastName = "Музеев",
+        FirstName = "Иван",
+        MiddleName = "Иванович",
+        Email = "museumadmin@museum.ru",
+        Password = "$2a$11$0NR8Ir7eg9MNV9VFQsudROSeSoRodME7UsMzNNfmLla/e/gLzQyuK", // AdminPassword123!
+        Phone = "+70000000002",
+        Role = "Администратор музея"
+    }
+);
     }
 }

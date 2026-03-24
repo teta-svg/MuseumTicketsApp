@@ -37,34 +37,34 @@ namespace Museum.Persistence.Repositories
                     .ThenInclude(t => t.TicketPrices)
                 .AsQueryable();
 
-            // Фильтр по названию выставки
+            //по названию выставки
             if (!string.IsNullOrEmpty(filter.Name))
                 query = query.Where(e => e.Name.Contains(filter.Name));
 
-            // Фильтр по названию музея
+            //по названию музея
             if (!string.IsNullOrEmpty(filter.MuseumName))
                 query = query.Where(e => e.MuseumExhibitions
                                           .Any(me => me.Museum.Name.Contains(filter.MuseumName)));
 
-            // Фильтр по названию музейного комплекса
+            //по названию музейного комплекса
             if (!string.IsNullOrEmpty(filter.MuseumComplexName))
                 query = query.Where(e => e.MuseumExhibitions
                                           .Any(me => me.Museum.MuseumComplex.Name
                                                       .Contains(filter.MuseumComplexName)));
 
-            // Фильтр по минимальной цене
+            //по минимальной цене
             if (filter.MinPrice.HasValue)
                 query = query.Where(e => e.Tickets
                                          .Where(t => t.TicketPrices.Any())
                                          .Min(t => t.TicketPrices.Min(tp => tp.Price)) >= filter.MinPrice.Value);
 
-            // Фильтр по максимальной цене
+            //по максимальной цене
             if (filter.MaxPrice.HasValue)
                 query = query.Where(e => e.Tickets
                                          .Where(t => t.TicketPrices.Any())
                                          .Min(t => t.TicketPrices.Min(tp => tp.Price)) <= filter.MaxPrice.Value);
 
-            // Фильтр по датам проведения
+            //по датам проведения
             if (filter.StartDate.HasValue)
             {
                 var start = DateOnly.FromDateTime(filter.StartDate.Value);
@@ -85,9 +85,36 @@ namespace Museum.Persistence.Repositories
             return await _context.Exhibitions
                 .Include(e => e.MuseumExhibitions)
                     .ThenInclude(me => me.Museum)
+                        .ThenInclude(m => m.MuseumComplex)
+                .Include(e => e.MuseumExhibitions)
+                    .ThenInclude(me => me.Museum)
+                        .ThenInclude(m => m.MuseumSchedules)
+                            .ThenInclude(ms => ms.ScheduleDays)
                 .Include(e => e.Tickets)
                     .ThenInclude(t => t.TicketPrices)
                 .FirstOrDefaultAsync(e => e.ExhibitionId == id);
+        }
+
+        public async Task AddAsync(Exhibition exhibition)
+        {
+            await _context.Exhibitions.AddAsync(exhibition);
+        }
+
+        public Task UpdateAsync(Exhibition exhibition)
+        {
+            _context.Exhibitions.Update(exhibition);
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAsync(Exhibition exhibition)
+        {
+            _context.Exhibitions.Remove(exhibition);
+            return Task.CompletedTask;
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

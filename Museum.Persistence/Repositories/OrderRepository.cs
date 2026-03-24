@@ -146,5 +146,26 @@ namespace Museum.Persistence.Repositories
                 }).ToList()
             };
         }
+        public async Task<List<OrderDto>> GetAllAsync()
+        {
+            var orders = await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Ticket)
+                .ToListAsync();
+
+            return orders.Select(o => new OrderDto
+            {
+                OrderId = o.OrderId,
+                CreatedAt = DateTime.Now,
+                Status = "Неизвестно",
+                Tickets = o.OrderItems.Select(oi => new OrderTicketDto
+                {
+                    TicketId = oi.TicketId,
+                    TicketType = oi.Ticket != null ? oi.Ticket.Type : "Неизвестно",
+                    Quantity = oi.Quantity,
+                    Price = 0
+                }).ToList()
+            }).ToList();
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace Museum.Application.Interfaces
         Task<bool> CheckTicketAvailabilityAsync(int ticketId, int quantity);
         Task UpdateOrderStatusAsync(int orderId, string status);
         Task<OrderDto?> GetOrderByIdAsync(int orderId);
+        Task<List<OrderDto>> GetAllAsync();
     }
 }

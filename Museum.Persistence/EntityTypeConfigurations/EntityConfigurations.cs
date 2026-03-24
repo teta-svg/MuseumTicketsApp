@@ -210,7 +210,7 @@ namespace Museum.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Payment> builder)
         {
             builder.HasKey(e => e.PaymentId);
-            builder.Property(e => e.PaymentId)
+            builder.Property(e => e.PaymentId)      
                    .UseIdentityColumn(10001, 1);
 
             builder.Property(e => e.Amount).HasColumnType("money").IsRequired();
