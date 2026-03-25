@@ -7,7 +7,6 @@ public interface IAdminService
     Task DeleteExhibitionAsync(int id);
 
     Task AddTicketAsync(CreateTicketAdminDto dto);
-
     Task UpdateTicketAsync(int ticketId, UpdateTicketAdminDto dto);
 
     Task AddScheduleAsync(CreateScheduleAdminDto dto);
@@ -15,5 +14,10 @@ public interface IAdminService
     Task CreateUserAsync(string email, string password, string firstName, string lastName, string? middleName, string? phone, string role);
     Task DeleteUserAsync(string email);
 
+    Task CloseTicketSalesAsync(int exhibitionId);
+    Task<List<OrderDto>> GetAllOrdersAsync();
+    Task UpdateOrderStatusAsync(int orderId, string status);
+
+    Task<IEnumerable<ExhibitionSalesDto>> GetExhibitionSalesAsync();
     Task<(byte[] FileContent, string FileName)> GetStatisticsAsync();
 }

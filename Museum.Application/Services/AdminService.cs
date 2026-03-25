@@ -27,41 +27,49 @@ public class AdminService : IAdminService
         _museumRepo = museumRepo;
     }
 
-    public async Task<int> CreateExhibitionAsync(CreateExhibitionAdminDto dto)
+    private async Task<Museum.Domain.Museum> GetOrCreateMuseumAsync(CreateExhibitionAdminDto dto)
     {
         var museum = await _museumRepo.GetByAddressAsync(dto.MuseumName, dto.City, dto.Street, dto.House);
 
-        if (museum == null)
-        {
-            museum = new Museum.Domain.Museum
-            {
-                Name = dto.MuseumName,
-                City = dto.City,
-                Street = dto.Street,
-                House = dto.House,
-                MuseumComplexId = dto.MuseumComplexId
-            };
+        if (museum != null)
+            return museum;
 
-            await _museumRepo.AddAsync(museum);
-            await _museumRepo.SaveChangesAsync();
-        }
+        museum = new Museum.Domain.Museum
+        {
+            Name = dto.MuseumName,
+            City = dto.City,
+            Street = dto.Street,
+            House = dto.House,
+            MuseumComplexId = dto.MuseumComplexId
+        };
+
+        await _museumRepo.AddAsync(museum);
+        await _museumRepo.SaveChangesAsync();
+
+        return museum;
+    }
+
+    public async Task<int> CreateExhibitionAsync(CreateExhibitionAdminDto dto)
+    {
+        var museum = await GetOrCreateMuseumAsync(dto);
 
         var exhibition = new Exhibition
         {
             Name = dto.Name,
-            Photo = dto.Photo
+            Photo = dto.Photo,
+            MuseumExhibitions =
+        {
+            new MuseumExhibition
+            {
+                MuseumId = museum.MuseumId,
+                StartDate = DateOnly.FromDateTime(dto.StartDate),
+                EndDate = DateOnly.FromDateTime(dto.EndDate)
+            }
+        }
         };
 
         await _exhibitionRepo.AddAsync(exhibition);
         await _exhibitionRepo.SaveChangesAsync();
-
-        exhibition.MuseumExhibitions.Add(new MuseumExhibition
-        {
-            MuseumId = museum.MuseumId,
-            ExhibitionId = exhibition.ExhibitionId,
-            StartDate = DateOnly.FromDateTime(dto.StartDate),
-            EndDate = DateOnly.FromDateTime(dto.EndDate)
-        });
 
         foreach (var t in dto.Tickets)
         {
@@ -70,34 +78,33 @@ public class AdminService : IAdminService
                 ExhibitionId = exhibition.ExhibitionId,
                 Type = t.Type,
                 AvailableQuantity = t.Quantity,
-                Status = "Доступен"
-            };
-
-            ticket.TicketPrices.Add(new TicketPrice
+                Status = "Доступен",
+                TicketPrices =
             {
-                Price = t.Price,
-                StartDate = DateOnly.FromDateTime(DateTime.Now),
-                EndDate = DateOnly.MaxValue
-            });
+                new TicketPrice
+                {
+                    Price = t.Price,
+                    StartDate = DateOnly.FromDateTime(DateTime.Now),
+                    EndDate = DateOnly.MaxValue
+                }
+            }
+            };
 
             await _ticketRepo.AddAsync(ticket);
         }
 
         foreach (var s in dto.Schedules)
         {
-            var schedule = new MuseumSchedule
+            await _scheduleRepo.AddAsync(new MuseumSchedule
             {
                 MuseumId = museum.MuseumId,
                 StartDate = s.StartDate,
                 EndDate = s.EndDate,
                 OpenTime = s.Open,
                 CloseTime = s.Close
-            };
-
-            await _scheduleRepo.AddAsync(schedule);
+            });
         }
 
-        await _exhibitionRepo.SaveChangesAsync();
         await _ticketRepo.SaveChangesAsync();
         await _scheduleRepo.SaveChangesAsync();
 
@@ -106,42 +113,34 @@ public class AdminService : IAdminService
 
     public async Task UpdateExhibitionAsync(int id, CreateExhibitionAdminDto dto)
     {
-        var exhibition = await _exhibitionRepo.GetByIdAsync(id);
-        if (exhibition == null) throw new Exception("Выставка не найдена");
+        var exhibition = await _exhibitionRepo.GetByIdAsync(id)
+            ?? throw new Exception("Выставка не найдена");
 
         exhibition.Name = dto.Name;
         exhibition.Photo = dto.Photo;
 
-        var targetMuseum = await _museumRepo.GetByAddressAsync(dto.MuseumName, dto.City, dto.Street, dto.House);
-
-        if (targetMuseum == null)
-        {
-            targetMuseum = new Museum.Domain.Museum
-            {
-                Name = dto.MuseumName,
-                City = dto.City,
-                Street = dto.Street,
-                House = dto.House,
-                MuseumComplexId = dto.MuseumComplexId
-            };
-            await _museumRepo.AddAsync(targetMuseum);
-            await _museumRepo.SaveChangesAsync(); 
-        }
+        var museum = await GetOrCreateMuseumAsync(dto);
 
         var relation = exhibition.MuseumExhibitions.FirstOrDefault();
-        if (relation != null)
+
+        if (relation == null)
         {
-            relation.MuseumId = targetMuseum.MuseumId;
+            exhibition.MuseumExhibitions.Add(new MuseumExhibition
+            {
+                MuseumId = museum.MuseumId,
+                StartDate = DateOnly.FromDateTime(dto.StartDate),
+                EndDate = DateOnly.FromDateTime(dto.EndDate)
+            });
+        }
+        else
+        {
+            relation.MuseumId = museum.MuseumId;
             relation.StartDate = DateOnly.FromDateTime(dto.StartDate);
             relation.EndDate = DateOnly.FromDateTime(dto.EndDate);
         }
 
-        var oldSchedules = await _scheduleRepo.GetByMuseumIdAsync(targetMuseum.MuseumId);
-
         await _exhibitionRepo.SaveChangesAsync();
     }
-
-
 
     public async Task DeleteExhibitionAsync(int id)
     {
@@ -180,8 +179,8 @@ public class AdminService : IAdminService
 
     public async Task UpdateTicketAsync(int ticketId, UpdateTicketAdminDto dto)
     {
-        var ticket = await _ticketRepo.GetByIdAsync(ticketId);
-        if (ticket == null) throw new Exception("Билет не найден");
+        var ticket = await _ticketRepo.GetByIdAsync(ticketId)
+            ?? throw new Exception("Билет не найден");
 
         ticket.AvailableQuantity = dto.Quantity;
 
@@ -240,6 +239,57 @@ public class AdminService : IAdminService
         _userRepo.Delete(user);
         await _userRepo.SaveChangesAsync();
     }
+
+    public async Task CloseTicketSalesAsync(int exhibitionId)
+    {
+        var tickets = await _ticketRepo.GetTicketsByExhibitionAsync(exhibitionId);
+
+        foreach (var ticket in tickets)
+            ticket.Status = "Отменён";
+
+        await _ticketRepo.SaveChangesAsync();
+    }
+
+    public async Task<List<OrderDto>> GetAllOrdersAsync()
+    {
+        return await _orderRepo.GetAllAsync();
+    }
+
+
+    public async Task UpdateOrderStatusAsync(int orderId, string status)
+    {
+        if (status != "Продан" && status != "Отменён" && status != "Доступен")
+            throw new Exception("Недопустимый статус");
+
+        await _orderRepo.UpdateOrderStatusAsync(orderId, status);
+    }
+
+    public async Task<IEnumerable<ExhibitionSalesDto>> GetExhibitionSalesAsync()
+    {
+        var orders = await _orderRepo.GetAllAsync();
+        var tickets = await _ticketRepo.GetAllAsync();
+        var exhibitions = await _exhibitionRepo.GetAllAsync();
+
+        var ticketsById = tickets.ToDictionary(t => t.TicketId);
+
+        return orders
+            .SelectMany(o => o.Tickets)
+            .Where(t => ticketsById.ContainsKey(t.TicketId))
+            .GroupBy(t => ticketsById[t.TicketId].ExhibitionId)
+            .Select(g =>
+            {
+                var exhibition = exhibitions.FirstOrDefault(e => e.ExhibitionId == g.Key);
+
+                return new ExhibitionSalesDto
+                {
+                    ExhibitionId = g.Key,
+                    ExhibitionName = exhibition?.Name ?? "Неизвестная выставка",
+                    TicketsSold = g.Sum(x => x.Quantity)
+                };
+            })
+            .ToList();
+    }
+
 
     public async Task<(byte[] FileContent, string FileName)> GetStatisticsAsync()
     {

@@ -46,4 +46,12 @@ namespace Museum.Application.DTOs
         public decimal Price { get; set; }
     }
 
+    public class ExhibitionSalesDto
+    {
+        public int ExhibitionId { get; set; }
+        public string ExhibitionName { get; set; }
+        public int TicketsSold { get; set; }
+    }
+
+
 }

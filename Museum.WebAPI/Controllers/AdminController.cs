@@ -43,7 +43,6 @@ namespace Museum.WebAPI.Controllers
         }
 
 
-
         [HttpPost("tickets")]
         [Authorize(Roles = "Администратор музея,Администратор системы")]
         public async Task<IActionResult> AddTicket([FromBody] CreateTicketAdminDto dto)
