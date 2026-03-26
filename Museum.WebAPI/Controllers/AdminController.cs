@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Museum.Application.DTOs;
-using Museum.Application.Interfaces;
 
 namespace Museum.WebAPI.Controllers
 {
@@ -16,7 +15,6 @@ namespace Museum.WebAPI.Controllers
         {
             _adminService = adminService;
         }
-
 
         [HttpPost("exhibitions")]
         [Authorize(Roles = "Администратор музея,Администратор системы")]
@@ -42,15 +40,21 @@ namespace Museum.WebAPI.Controllers
             return NoContent();
         }
 
+        [HttpPost("exhibitions/{id}/close-sales")]
+        [Authorize(Roles = "Администратор музея,Администратор системы")]
+        public async Task<IActionResult> CloseSales(int id)
+        {
+            await _adminService.CloseTicketSalesAsync(id);
+            return Ok(new { message = "Продажи закрыты" });
+        }
 
         [HttpPost("tickets")]
         [Authorize(Roles = "Администратор музея,Администратор системы")]
         public async Task<IActionResult> AddTicket([FromBody] CreateTicketAdminDto dto)
         {
-            await _adminService.AddTicketAsync(dto); 
+            await _adminService.AddTicketAsync(dto);
             return Ok();
         }
-
 
         [HttpPut("tickets/{ticketId}")]
         [Authorize(Roles = "Администратор музея,Администратор системы")]
@@ -60,7 +64,6 @@ namespace Museum.WebAPI.Controllers
             return NoContent();
         }
 
-
         [HttpPost("schedules")]
         [Authorize(Roles = "Администратор музея,Администратор системы")]
         public async Task<IActionResult> AddSchedule([FromBody] CreateScheduleAdminDto dto)
@@ -68,8 +71,6 @@ namespace Museum.WebAPI.Controllers
             await _adminService.AddScheduleAsync(dto);
             return Ok();
         }
-
-
 
         [HttpPost("users")]
         [Authorize(Roles = "Администратор системы")]
@@ -87,6 +88,27 @@ namespace Museum.WebAPI.Controllers
             return NoContent();
         }
 
+        [HttpGet("orders")]
+        [Authorize(Roles = "Администратор системы")]
+        public async Task<IActionResult> GetOrders()
+        {
+            return Ok(await _adminService.GetAllOrdersAsync());
+        }
+
+        [HttpPatch("orders/{orderId}/status")]
+        [Authorize(Roles = "Администратор системы")]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromQuery] string status)
+        {
+            await _adminService.UpdateOrderStatusAsync(orderId, status);
+            return Ok(new { message = "Статус обновлён" });
+        }
+
+        [HttpGet("reports/sales")]
+        [Authorize(Roles = "Администратор системы")]
+        public async Task<IActionResult> GetSalesReport()
+        {
+            return Ok(await _adminService.GetExhibitionSalesAsync());
+        }
 
         [HttpGet("statistics")]
         [Authorize(Roles = "Администратор системы")]
@@ -94,9 +116,11 @@ namespace Museum.WebAPI.Controllers
         {
             var (fileContent, fileName) = await _adminService.GetStatisticsAsync();
 
-            return File(fileContent,
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        fileName);
+            return File(
+                fileContent,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileName
+            );
         }
     }
 }

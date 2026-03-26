@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = "Неверный email или пароль" });
         }
-
+        
         return Ok(new { token });
     }
 

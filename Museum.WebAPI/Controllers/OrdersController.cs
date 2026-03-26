@@ -2,14 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Museum.Application.DTOs;
 using Museum.Application.Interfaces;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace Museum.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize] 
+    [Authorize] 
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderService;

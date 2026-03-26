@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 18
-VisualStudioVersion = 18.3.11505.172
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36616.10 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{5A85440A-5B4F-4E50-80F7-1FD212172F30}"
 EndProject
@@ -31,6 +31,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{EEF8
 		seed.sql = seed.sql
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Museum.Blazor", "Museum.Blazor\Museum.Blazor.csproj", "{D383E7CC-44EE-42A3-B717-9A1CB2865F88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{F113B611-E54C-4B9E-AE6B-4654B9C2D4D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F113B611-E54C-4B9E-AE6B-4654B9C2D4D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F113B611-E54C-4B9E-AE6B-4654B9C2D4D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D383E7CC-44EE-42A3-B717-9A1CB2865F88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D383E7CC-44EE-42A3-B717-9A1CB2865F88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D383E7CC-44EE-42A3-B717-9A1CB2865F88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D383E7CC-44EE-42A3-B717-9A1CB2865F88}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +69,7 @@ Global
 		{63A017EE-94C0-0CF6-0777-B8A55FA30752} = {5A85440A-5B4F-4E50-80F7-1FD212172F30}
 		{F113B611-E54C-4B9E-AE6B-4654B9C2D4D7} = {FA9FA678-4FDF-4783-BF56-723CD56B478E}
 		{EEF8FA54-9467-47CF-9EC8-EEA9642781C4} = {FA9FA678-4FDF-4783-BF56-723CD56B478E}
+		{D383E7CC-44EE-42A3-B717-9A1CB2865F88} = {A82BABB2-DA94-42F8-9724-976C0C98129E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EA53224-AC06-4DA7-B5B6-199C4EC4C2BC}
