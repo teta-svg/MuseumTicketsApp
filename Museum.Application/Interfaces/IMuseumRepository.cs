@@ -1,6 +1,4 @@
-﻿using Museum.Domain;
-
-public interface IMuseumRepository
+﻿public interface IMuseumRepository
 {
     Task AddAsync(Museum.Domain.Museum museum);
     Task<Museum.Domain.Museum?> GetByNameAsync(string name);

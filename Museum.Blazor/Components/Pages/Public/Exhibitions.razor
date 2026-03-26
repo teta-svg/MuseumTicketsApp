@@ -1,0 +1,116 @@
+﻿@rendermode InteractiveServer
+@page "/exhibitions"
+@page "/"
+@inject HttpClient Https
+@using Museum.Application.DTOs
+@using Microsoft.AspNetCore.WebUtilities
+
+
+
+<div class="container py-4">
+    <h1 class="display-6 fw-bold mb-5 mt-4 border-start border-dark border-4 ps-3">Экспозиции</h1>
+
+    <div class="filter-panel shadow-sm mb-5">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="filter-label">Название</label>
+                <input type="text" class="form-control-custom" @bind="filter.Name" @bind:event="oninput" placeholder="Поиск..." />
+            </div>
+            <div class="col-md-2">
+                <label class="filter-label">Музей</label>
+                <input type="text" class="form-control-custom" @bind="filter.MuseumName" @bind:event="oninput" placeholder="Название музея" />
+            </div>
+            <div class="col-md-3">
+                <label class="filter-label">Цена (от - до)</label>
+                <div class="d-flex gap-2">
+                    <input type="number" class="form-control-custom" @bind="filter.MinPrice" placeholder="Мин" />
+                    <input type="number" class="form-control-custom" @bind="filter.MaxPrice" placeholder="Макс" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="filter-label">Дата начала</label>
+                <input type="date" class="form-control-custom" @bind="filter.StartDate" />
+            </div>
+            <div class="col-md-3">
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-dark w-100 py-2 fw-bold" @onclick="LoadExhibitions">
+                        НАЙТИ
+                    </button>
+                    <button type="button" class="btn btn-reset py-2 px-3" @onclick="ResetFilters">
+                        <i class="bi bi-x-lg">СБРОСИТЬ</i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    @if (exhibitions == null)
+    {
+        <div class="text-center py-5"><div class="spinner-border"></div></div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var e in exhibitions)
+            {
+                <div class="col">
+                    <div class="exhibition-card">
+                        <div class="position-relative">
+                            <img src="@(string.IsNullOrEmpty(e.Photo) ? "https://placehold.co/600x400/orange/white" : e.Photo)" class="exhibition-image" />
+                            <div class="price-badge">от @e.MinPrice.ToString("N0") ₽</div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="title">@e.Name</h5>
+                            <p class="museum text-muted"><i class="bi bi-bank me-2"></i>@e.MuseumName</p>
+                            <NavLink class="btn btn-dark w-100 mt-auto" href="@($"/exhibitions/{e.ExhibitionID}")">Подробнее</NavLink>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<PublicExhibitionDTO>? exhibitions;
+    private ExhibitionFilterDto filter = new();
+
+    protected override async Task OnInitializedAsync() => await LoadExhibitions();
+
+    private async Task LoadExhibitions()
+    {
+        try
+        {
+            var queryParams = new Dictionary<string, string?>();
+
+            if (!string.IsNullOrWhiteSpace(filter.Name)) queryParams.Add("Name", filter.Name);
+            if (!string.IsNullOrWhiteSpace(filter.MuseumName)) queryParams.Add("MuseumName", filter.MuseumName);
+            if (filter.MinPrice.HasValue) queryParams.Add("MinPrice", filter.MinPrice.Value.ToString());
+            if (filter.MaxPrice.HasValue) queryParams.Add("MaxPrice", filter.MaxPrice.Value.ToString());
+
+            var url = QueryHelpers.AddQueryString("api/Exhibitions/filter", queryParams);
+        
+            Console.WriteLine($"[DEBUG] Сформирован URL: {Https.BaseAddress}{url}");
+
+            var result = await Https.GetFromJsonAsync<List<PublicExhibitionDTO>>(url);
+        
+            exhibitions = result ?? new();
+            Console.WriteLine($"[DEBUG] Получено объектов: {exhibitions.Count}");
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] ОШИБКА В МЕТОДЕ: {ex.Message}");
+            if (ex.InnerException != null)
+                Console.WriteLine($"[INNER ERROR] {ex.InnerException.Message}");
+        }
+    }
+
+    private async Task ResetFilters()
+    {
+        filter = new ExhibitionFilterDto();
+        await LoadExhibitions();
+    }
+}

@@ -1,30 +1,46 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Museum.Blazor</a>
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+<nav class="custom-navbar">
+    <div class="container nav-wrapper">
+        <a class="navbar-brand-custom" href="/">MUSEUM</a>
+
+        <div class="nav-right-group">
+            <div class="nav-links">
+                <NavLink class="nav-link-custom" href="/exhibitions">ВЫСТАВКИ</NavLink>
+                <NavLink class="nav-link-custom" href="/orders">МОИ ЗАКАЗЫ</NavLink>
+
+                @if (IsAdmin)
+                {
+                    <div class="nav-dropdown-custom">
+                        <span class="nav-link-custom">АДМИНИСТРИРОВАНИЕ</span>
+                        <div class="dropdown-content">
+                            <NavLink href="/admin/museum">МУЗЕЙ</NavLink>
+                            <NavLink href="/admin/system">СИСТЕМА</NavLink>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <NavLink class="btn-login-custom" href="/login">ВОЙТИ</NavLink>
+        </div>
     </div>
-</div>
+</nav>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+@code {
+    private bool IsAdmin = false;
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+    protected override async Task OnParametersSetAsync()
+    {
+        if (AuthStateTask != null)
+        {
+            var authState = await AuthStateTask;
+            var user = authState.User;
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
+            IsAdmin = user.IsInRole("Администратор музея") ||
+                      user.IsInRole("Администратор системы");
+        }
+    }
+}

@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Museum.Application.DTOs;
-
-namespace Museum.Application.Interfaces
+﻿namespace Museum.Application.Interfaces
 {
     public interface IAuthService
     {

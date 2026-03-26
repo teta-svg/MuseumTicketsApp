@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Museum.Application.DTOs;
+﻿using Museum.Application.DTOs;
 using Museum.Application.Interfaces;
 using Museum.Domain;
 

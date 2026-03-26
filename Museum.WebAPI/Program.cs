@@ -92,7 +92,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseDefaultFiles(); // ищет index.html по умолчанию
+app.UseDefaultFiles(); 
 app.UseStaticFiles();
 
 app.UseAuthentication();

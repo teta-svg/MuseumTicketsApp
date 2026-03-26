@@ -1,8 +1,5 @@
 ﻿using Museum.Application.DTOs;
 using Museum.Domain;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Museum.Application.Interfaces
 {

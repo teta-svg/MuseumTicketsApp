@@ -4,6 +4,6 @@
     public string Password { get; set; } = null!;
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
-    public string? MiddleName { get; set; } // Необязательно
-    public string? Phone { get; set; }      // Необязательно
+    public string? MiddleName { get; set; }
+    public string? Phone { get; set; }
 }

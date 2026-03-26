@@ -2,9 +2,6 @@
 using Museum.Application.DTOs;
 using Museum.Application.Interfaces;
 using Museum.Domain;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Museum.Persistence.Repositories
 {
@@ -35,7 +32,9 @@ namespace Museum.Persistence.Repositories
                         .ThenInclude(m => m.MuseumComplex)
                 .Include(e => e.Tickets)
                     .ThenInclude(t => t.TicketPrices)
+                .AsSplitQuery()
                 .AsQueryable();
+
 
             //по названию выставки
             if (!string.IsNullOrEmpty(filter.Name))
