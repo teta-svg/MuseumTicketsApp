@@ -9,8 +9,13 @@ namespace Museum.WebAPI.Controllers
     public class ExhibitionsController : ControllerBase
     {
         private readonly IExhibitionService _service;
+        private readonly ILogger<ExhibitionsController> _logger;
 
-        public ExhibitionsController(IExhibitionService service) => _service = service;
+        public ExhibitionsController(IExhibitionService service, ILogger<ExhibitionsController> logger)
+        {
+            _service = service;
+            _logger = logger;
+        }
 
         [HttpGet]
         public async Task<ActionResult<List<PublicExhibitionDTO>>> GetAll() =>
@@ -19,6 +24,10 @@ namespace Museum.WebAPI.Controllers
         [HttpGet("filter")]
         public async Task<IActionResult> GetFiltered([FromQuery] ExhibitionFilterDto filter)
         {
+            _logger.LogInformation("Received filter: Name={Name}, MuseumName={MuseumName}, MinPrice={MinPrice}, MaxPrice={MaxPrice}, StartDate={StartDate}, EndDate={EndDate}",
+                filter.Name, filter.MuseumName, filter.MinPrice, filter.MaxPrice,
+                filter.StartDate?.ToString(), filter.EndDate?.ToString());
+
             var exhibitions = await _service.GetFilteredAsync(filter);
             return Ok(exhibitions);
         }

@@ -5,6 +5,30 @@ body {
     margin: 0;
 }
 
+.filter-tags {
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.filter-tags .badge {
+    padding:8px 10px;
+    border-radius:16px;
+    background:#f1f1f1;
+    color:#333;
+    font-weight:600;
+}
+
+.reset-link {
+    color: #6c757d;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.btn-search {
+    min-width:110px;
+}
+
 .page {
     display: flex;
     flex-direction: column !important;
@@ -25,6 +49,7 @@ main {
     align-items: center;
     border-bottom: 1px solid #222;
     padding: 0 !important;
+    z-index: 3000;
 }
 
 .nav-wrapper {
@@ -233,9 +258,30 @@ h2.mb-5 {
 
 .filter-panel {
     background: #fff;
-    padding: 25px;
-    border-radius: 12px;
+    padding: 20px;
+    border-radius: 10px;
     border: 1px solid #eee;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.04);
+}
+
+.filter-vertical {
+    padding: 18px;
+}
+
+.page-banner {
+    background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 18px 22px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.page-banner .banner-content h3 {
+    margin: 0;
+    font-weight: 800;
+}
+
+.page-banner .banner-content p {
+    margin: 0;
 }
 
 .filter-label {
@@ -245,7 +291,7 @@ h2.mb-5 {
     letter-spacing: 1px;
     margin-bottom: 8px;
     display: block;
-    color: #888;
+    color: #6c757d;
 }
 
 .form-control-custom {
@@ -281,4 +327,30 @@ h2.mb-5 {
         border-color: #000;
         color: #000;
     }
+
+.filter-panel {
+    background: #fff;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+}
+
+.filter-panel .filter-label.small {
+    font-size: 0.7rem;
+    color: #6c757d;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.input-group-text i {
+    font-size: 0.9rem;
+}
+
+.btn-outline-secondary {
+    border-radius: 8px;
+}
+
+.exhibition-card .card-body {
+    padding: 1rem !important;
+}
 

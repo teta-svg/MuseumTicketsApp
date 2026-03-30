@@ -64,16 +64,25 @@ namespace Museum.Persistence.Repositories
                                          .Min(t => t.TicketPrices.Min(tp => tp.Price)) <= filter.MaxPrice.Value);
 
             //по датам проведения
-            if (filter.StartDate.HasValue)
+            if (filter.StartDate.HasValue && filter.EndDate.HasValue) 
+            { 
+                var start = filter.StartDate.Value; 
+                var end = filter.EndDate.Value; 
+                query = query.Where(e => e.MuseumExhibitions.Any() 
+                                         && e.MuseumExhibitions.Min(me => me.StartDate) >= start 
+                                         && e.MuseumExhibitions.Max(me => me.EndDate) <= end); 
+            } 
+            else if (filter.StartDate.HasValue)
             {
-                var start = DateOnly.FromDateTime(filter.StartDate.Value);
-                query = query.Where(e => e.MuseumExhibitions.Any(me => me.StartDate >= start));
+                var start = filter.StartDate.Value;
+                query = query.Where(e => e.MuseumExhibitions.Any()
+                                         && e.MuseumExhibitions.Min(me => me.StartDate) >= start);
             }
-
-            if (filter.EndDate.HasValue)
+            else if (filter.EndDate.HasValue)
             {
-                var end = DateOnly.FromDateTime(filter.EndDate.Value);
-                query = query.Where(e => e.MuseumExhibitions.Any(me => me.EndDate <= end));
+                var end = filter.EndDate.Value;
+                query = query.Where(e => e.MuseumExhibitions.Any()
+                                         && e.MuseumExhibitions.Max(me => me.EndDate) <= end);
             }
 
             return await query.ToListAsync();

@@ -1,0 +1,92 @@
+@page "/login"
+@using Museum.Application.DTOs
+@inject HttpClient Https
+@inject NavigationManager Navigation
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="card p-3">
+                <ul class="nav nav-tabs mb-3">
+                    <li class="nav-item">
+                        <button type="button" class="@LoginTabClass" @onclick="SetLoginTab">Вход</button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="@RegisterTabClass" @onclick="SetRegisterTab">Регистрация</button>
+                    </li>
+                </ul>
+
+                @if (activeTab == "login")
+                {
+                    <EditForm Model="loginModel" OnValidSubmit="SubmitLogin" formname="loginForm">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="mb-2">
+                            <label class="form-label">Email</label>
+                            <InputText class="form-control" @bind-Value="loginModel.Email" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Пароль</label>
+                            <InputText type="password" class="form-control" @bind-Value="loginModel.Password" />
+                        </div>
+                        <button class="btn btn-primary">Войти</button>
+                    </EditForm>
+                }
+                else
+                {
+                    <EditForm Model="regModel" OnValidSubmit="SubmitRegister" formname="registerForm">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="mb-2">
+                            <label class="form-label">Имя</label>
+                            <InputText class="form-control" @bind-Value="regModel.FirstName" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Фамилия</label>
+                            <InputText class="form-control" @bind-Value="regModel.LastName" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Email</label>
+                            <InputText class="form-control" @bind-Value="regModel.Email" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Пароль</label>
+                            <InputText type="password" class="form-control" @bind-Value="regModel.Password" />
+                        </div>
+                        <button class="btn btn-primary">Зарегистрироваться</button>
+                    </EditForm>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string activeTab = "login";
+    private LoginRequest loginModel = new();
+    private RegisterRequest regModel = new();
+
+    private void SetTab(string tab)
+    {
+        activeTab = tab;
+    }
+
+    private string LoginTabClass => activeTab == "login" ? "nav-link active" : "nav-link";
+    private string RegisterTabClass => activeTab == "register" ? "nav-link active" : "nav-link";
+
+    private void SetLoginTab() => activeTab = "login";
+    private void SetRegisterTab() => activeTab = "register";
+
+    private async Task SubmitLogin()
+    {
+        var resp = await Https.PostAsJsonAsync("api/Auth/login", loginModel);
+        if (resp.IsSuccessStatusCode) Navigation.NavigateTo("/");
+    }
+
+    private async Task SubmitRegister()
+    {
+        var resp = await Https.PostAsJsonAsync("api/Auth/register", regModel);
+        if (resp.IsSuccessStatusCode) SetTab("login");
+    }
+}

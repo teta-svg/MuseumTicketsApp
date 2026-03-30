@@ -10,66 +10,75 @@
 <div class="container py-4">
     <h1 class="display-6 fw-bold mb-5 mt-4 border-start border-dark border-4 ps-3">Экспозиции</h1>
 
-    <div class="filter-panel shadow-sm mb-5">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label class="filter-label">Название</label>
-                <input type="text" class="form-control-custom" @bind="filter.Name" @bind:event="oninput" placeholder="Поиск..." />
-            </div>
-            <div class="col-md-2">
-                <label class="filter-label">Музей</label>
-                <input type="text" class="form-control-custom" @bind="filter.MuseumName" @bind:event="oninput" placeholder="Название музея" />
-            </div>
-            <div class="col-md-3">
-                <label class="filter-label">Цена (от - до)</label>
-                <div class="d-flex gap-2">
-                    <input type="number" class="form-control-custom" @bind="filter.MinPrice" placeholder="Мин" />
-                    <input type="number" class="form-control-custom" @bind="filter.MaxPrice" placeholder="Макс" />
+    <div class="row">
+        <div class="col-12 col-lg-3">
+            <div class="filter-panel filter-vertical shadow-sm mb-4">
+                <h6 class="mb-3">Фильтры</h6>
+                <div class="mb-3">
+                    <label class="filter-label">Название</label>
+                    <input type="text" class="form-control-custom" @bind="filter.Name" @bind:event="oninput" placeholder="Поиск..." />
                 </div>
-            </div>
-            <div class="col-md-2">
-                <label class="filter-label">Дата начала</label>
-                <input type="date" class="form-control-custom" @bind="filter.StartDate" />
-            </div>
-            <div class="col-md-3">
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-dark w-100 py-2 fw-bold" @onclick="LoadExhibitions">
-                        НАЙТИ
-                    </button>
-                    <button type="button" class="btn btn-reset py-2 px-3" @onclick="ResetFilters">
-                        <i class="bi bi-x-lg">СБРОСИТЬ</i>
-                    </button>
+                <div class="mb-3">
+                    <label class="filter-label">Музей</label>
+                    <input type="text" class="form-control-custom" @bind="filter.MuseumName" @bind:event="oninput" placeholder="Название музея" />
                 </div>
-            </div>
-
-        </div>
-    </div>
-
-    @if (exhibitions == null)
-    {
-        <div class="text-center py-5"><div class="spinner-border"></div></div>
-    }
-    else
-    {
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            @foreach (var e in exhibitions)
-            {
-                <div class="col">
-                    <div class="exhibition-card">
-                        <div class="position-relative">
-                            <img src="@(string.IsNullOrEmpty(e.Photo) ? "https://placehold.co/600x400/orange/white" : e.Photo)" class="exhibition-image" />
-                            <div class="price-badge">от @e.MinPrice.ToString("N0") ₽</div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="title">@e.Name</h5>
-                            <p class="museum text-muted"><i class="bi bi-bank me-2"></i>@e.MuseumName</p>
-                            <NavLink class="btn btn-dark w-100 mt-auto" href="@($"/exhibitions/{e.ExhibitionID}")">Подробнее</NavLink>
-                        </div>
+                <div class="mb-3">
+                    <label class="filter-label">Цена (от - до)</label>
+                    <div class="d-flex gap-2">
+                        <input type="number" class="form-control-custom" @bind="filter.MinPrice" placeholder="Мин" />
+                        <input type="number" class="form-control-custom" @bind="filter.MaxPrice" placeholder="Макс" />
                     </div>
+                </div>
+                <div class="mb-3">
+                    <label class="filter-label">Дата начала</label>
+                    <input type="date" class="form-control-custom" @bind="filter.StartDate" />
+                </div>
+                <div class="mb-3">
+                    <label class="filter-label">Дата окончания</label>
+                    <input type="date" class="form-control-custom" @bind="filter.EndDate" />
+                </div>
+                <div class="d-grid">
+                    <button type="button" class="btn btn-dark mb-2" @onclick="LoadExhibitions">Найти</button>
+                    <button type="button" class="btn btn-outline-secondary" @onclick="ResetFilters">Сбросить</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-9">
+            <div class="page-banner mb-4">
+                <div class="banner-content">
+                    <h3 class="mb-1">Текущие экспозиции</h3>
+                    <p class="mb-0 text-muted">Узнайте о лучших выставках и специальных предложениях</p>
+                </div>
+            </div>
+
+            @if (exhibitions == null)
+            {
+                <div class="text-center py-5"><div class="spinner-border"></div></div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    @foreach (var e in exhibitions)
+                    {
+                        <div class="col">
+                            <div class="exhibition-card">
+                                <div class="position-relative">
+                                    <img src="@(string.IsNullOrEmpty(e.Photo) ? "https://placehold.co/600x400/orange/white" : e.Photo)" class="exhibition-image" />
+                                    <div class="price-badge">от @e.MinPrice.ToString("N0") ₽</div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="title">@e.Name</h5>
+                                    <p class="museum text-muted"><i class="bi bi-bank me-2"></i>@e.MuseumName</p>
+                                    <NavLink class="btn btn-dark w-100 mt-auto" href="@($"/exhibitions/{e.ExhibitionID}")">Подробнее</NavLink>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             }
         </div>
-    }
+    </div>
 </div>
 
 @code {
@@ -86,8 +95,10 @@
 
             if (!string.IsNullOrWhiteSpace(filter.Name)) queryParams.Add("Name", filter.Name);
             if (!string.IsNullOrWhiteSpace(filter.MuseumName)) queryParams.Add("MuseumName", filter.MuseumName);
-            if (filter.MinPrice.HasValue) queryParams.Add("MinPrice", filter.MinPrice.Value.ToString());
-            if (filter.MaxPrice.HasValue) queryParams.Add("MaxPrice", filter.MaxPrice.Value.ToString());
+            if (filter.MinPrice.HasValue) queryParams.Add("MinPrice", filter.MinPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            if (filter.MaxPrice.HasValue) queryParams.Add("MaxPrice", filter.MaxPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            if (filter.StartDate.HasValue) queryParams.Add("StartDate", filter.StartDate.Value.ToString("yyyy-MM-dd"));
+            if (filter.EndDate.HasValue) queryParams.Add("EndDate", filter.EndDate.Value.ToString("yyyy-MM-dd"));
 
             var url = QueryHelpers.AddQueryString("api/Exhibitions/filter", queryParams);
         
