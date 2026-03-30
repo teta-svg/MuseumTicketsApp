@@ -5,6 +5,7 @@ using Museum.Application.Interfaces;
 namespace Museum.WebAPI.Controllers;
 
 [ApiController]
+[IgnoreAntiforgeryToken]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {

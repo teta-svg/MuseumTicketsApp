@@ -354,3 +354,13 @@ h2.mb-5 {
     padding: 1rem !important;
 }
 
+.login-wrapper {
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    width: 420px;
+}
