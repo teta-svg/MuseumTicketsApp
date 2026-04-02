@@ -1,4 +1,5 @@
 ﻿using Museum.Application.DTOs;
+using System.IO;
 
 public interface IAdminService
 {
@@ -20,4 +21,6 @@ public interface IAdminService
 
     Task<IEnumerable<ExhibitionSalesDto>> GetExhibitionSalesAsync();
     Task<(byte[] FileContent, string FileName)> GetStatisticsAsync();
+    Task<(byte[] FileContent, string FileName)> ExportUsersAsync();
+    Task<(byte[] FileContent, string FileName)> ExportExhibitionsAsync();
 }

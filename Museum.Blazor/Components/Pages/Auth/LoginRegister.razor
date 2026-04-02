@@ -1,151 +1,154 @@
 @page "/login"
-@rendermode InteractiveServer
 @using Museum.Application.DTOs
-@inject HttpClient Https
+@using System.IdentityModel.Tokens.Jwt
+@inject HttpClient Http
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
-<div class="login-wrapper">
-    <div class="card shadow p-4 login-card">
-        <h3 class="text-center mb-3">Museum</h3>
+<style>
+    .login-container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .form-control { margin-bottom: 15px; }
+    .tab-buttons { display: flex; gap: 5px; margin-bottom: 20px; }
+    .tab-buttons button { flex: 1; }
+</style>
 
-        <div class="d-flex mb-3">
-            <button type="button"
-                    class="@LoginTabClass w-50"
-                    @onclick="SetLoginTab">
-                Вход
-            </button>
-
-            <button type="button"
-                    class="@RegisterTabClass w-50"
-                    @onclick="SetRegisterTab">
-                Регистрация
-            </button>
-        </div>
-
-        @if (!string.IsNullOrEmpty(message))
-        {
-            <div class="alert alert-info">@message</div>
-        }
-
-        @if (activeTab == "login")
-        {
-            <EditForm Model="loginModel" OnValidSubmit="SubmitLogin" FormName="loginForm">
-                <DataAnnotationsValidator />
-
-                <div class="mb-3">
-                    <label>Email</label>
-                    <InputText class="form-control" @bind-Value="loginModel.Email" />
-                </div>
-
-                <div class="mb-3">
-                    <label>Пароль</label>
-                    <InputText type="password" class="form-control" @bind-Value="loginModel.Password" />
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100">
-                    Войти
-                </button>
-            </EditForm>
-        }
-        else
-        {
-            <EditForm Model="regModel" OnValidSubmit="SubmitRegister" FormName="registerForm">
-                <DataAnnotationsValidator />
-
-                <div class="mb-2">
-                    <label>Email</label>
-                    <InputText class="form-control" @bind-Value="regModel.Email" />
-                </div>
-
-                <div class="mb-2">
-                    <label>Пароль</label>
-                    <InputText type="password" class="form-control" @bind-Value="regModel.Password" />
-                </div>
-
-                <div class="mb-2">
-                    <label>Имя</label>
-                    <InputText class="form-control" @bind-Value="regModel.FirstName" />
-                </div>
-
-                <div class="mb-2">
-                    <label>Фамилия</label>
-                    <InputText class="form-control" @bind-Value="regModel.LastName" />
-                </div>
-
-                <div class="mb-2">
-                    <label>Отчество</label>
-                    <InputText class="form-control" @bind-Value="regModel.MiddleName" />
-                </div>
-
-                <div class="mb-3">
-                    <label>Телефон</label>
-                    <InputText class="form-control" @bind-Value="regModel.Phone" />
-                </div>
-
-                <button type="submit" class="btn btn-success w-100">
-                    Зарегистрироваться
-                </button>
-            </EditForm>
-        }
-    </div>
+<div class="login-container">
+    <div class="tab-buttons">
+    <button type="button" class="@LoginTabClass" @onclick='() => SetTab("login")'>Вход</button>
+    <button type="button" class="@RegisterTabClass" @onclick='() => SetTab("register")'>Регистрация</button>
 </div>
 
+
+    @if (activeTab == "login")
+{
+    <EditForm Model="loginModel" OnValidSubmit="SubmitLogin" FormName="LoginForm">
+        <DataAnnotationsValidator />
+        <InputText @bind-Value="loginModel.Email" placeholder="Email" class="form-control" />
+        <InputText @bind-Value="loginModel.Password" placeholder="Пароль" type="password" class="form-control" />
+        <button type="submit" class="btn btn-primary w-100">Войти</button>
+    </EditForm>
+}
+else
+{
+    <EditForm Model="regModel" OnValidSubmit="SubmitRegister" FormName="RegisterForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger small mb-3" />
+
+        <div class="mb-2">
+            <label class="small">Фамилия *</label>
+            <InputText @bind-Value="regModel.LastName" placeholder="Фамилия" class="form-control" />
+            <ValidationMessage For="@(() => regModel.LastName)" class="text-danger small" />
+        </div>
+
+        <div class="mb-2">
+            <label class="small">Имя *</label>
+            <InputText @bind-Value="regModel.FirstName" placeholder="Имя" class="form-control" />
+            <ValidationMessage For="@(() => regModel.FirstName)" class="text-danger small" />
+        </div>
+
+        <div class="mb-2">
+            <label class="small">Отчество (необязательно)</label>
+            <InputText @bind-Value="regModel.MiddleName" placeholder="Отчество" class="form-control" />
+        </div>
+
+        <div class="mb-2">
+            <label class="small">Email *</label>
+            <InputText @bind-Value="regModel.Email" placeholder="Email" class="form-control" />
+            <ValidationMessage For="@(() => regModel.Email)" class="text-danger small" />
+        </div>
+
+        <div class="mb-2">
+            <label class="small">Пароль *</label>
+            <InputText @bind-Value="regModel.Password" placeholder="Пароль" type="password" class="form-control" />
+            <ValidationMessage For="@(() => regModel.Password)" class="text-danger small" />
+        </div>
+
+        <div class="mb-2">
+            <label class="small">Номер телефона (необязательно)</label>
+            <InputText @bind-Value="regModel.Phone" placeholder="Номер телефона" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 mt-2">Зарегистрироваться</button>
+    </EditForm>
+}
+
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert alert-info mt-3 small">@message</div>
+    }
+</div>
 
 @code {
     private string activeTab = "login";
     private string message;
+    public class AuthResponse { public string Token { get; set; } }
 
-    private LoginRequest loginModel = new();
-    private RegisterRequest regModel = new();
 
-    private string LoginTabClass =>
-        activeTab == "login" ? "btn btn-primary" : "btn btn-outline-primary";
+    [SupplyParameterFromForm]
+    private LoginRequest loginModel { get; set; } = new();
 
-    private string RegisterTabClass =>
-        activeTab == "register" ? "btn btn-primary" : "btn btn-outline-primary";
+    [SupplyParameterFromForm]
+    private RegisterRequest regModel { get; set; } = new();
 
-    private void SetLoginTab()
+    private string LoginTabClass => activeTab == "login" ? "btn btn-primary" : "btn btn-outline-primary";
+    private string RegisterTabClass => activeTab == "register" ? "btn btn-primary" : "btn btn-outline-primary";
+
+    private void SetTab(string tab) 
     {
-        activeTab = "login";
-        message = null;
+        activeTab = tab;
+        message = "";
     }
 
-    private void SetRegisterTab()
+private async Task SubmitLogin()
     {
-        activeTab = "register";
-        message = null;
-    }
-
-    private async Task SubmitLogin()
-    {
-        var resp = await Https.PostAsJsonAsync("api/Auth/login", loginModel);
-
-        if (resp.IsSuccessStatusCode)
+        try 
         {
-            message = "Вход выполнен успешно!";
-            await Task.Delay(1000);
-            Navigation.NavigateTo("/");
+            var resp = await Http.PostAsJsonAsync("api/Auth/login", loginModel);
+            if (resp.IsSuccessStatusCode)
+            {
+                var authData = await resp.Content.ReadFromJsonAsync<AuthResponse>();
+                var token = authData?.Token ?? (await resp.Content.ReadAsStringAsync()).Trim('"');
+
+                await JS.InvokeVoidAsync("auth.setToken", token);
+
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(token);
+                var roles = jwt.Claims
+                    .Where(c => c.Type == "role" || c.Type.Contains("role"))
+                    .Select(c => c.Value).ToList();
+
+                if (roles.Contains("Администратор системы"))
+                     Navigation.NavigateTo("/admin/system", true);
+                else if (roles.Contains("Администратор музея"))
+                     Navigation.NavigateTo("/admin/museum", true);
+                else
+                     Navigation.NavigateTo("/", true);
+            }
+            else { message = "Неверный логин или пароль"; }
         }
-        else
-        {
-            var error = await resp.Content.ReadAsStringAsync();
-            message = "Ошибка входа: " + error;
-        }
+        catch (Exception ex) { message = "Ошибка: " + ex.Message; }
     }
 
     private async Task SubmitRegister()
     {
-        var resp = await Https.PostAsJsonAsync("api/Auth/register", regModel);
-
+        var resp = await Http.PostAsJsonAsync("api/Auth/register", regModel);
         if (resp.IsSuccessStatusCode)
         {
-            message = "Регистрация успешна! Теперь войдите.";
+            message = "Успех!";
             activeTab = "login";
         }
         else
         {
-            var error = await resp.Content.ReadAsStringAsync();
-            message = "Ошибка регистрации: " + error;
+            message = "Ошибка регистрации";
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿@using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
+@inject IJSRuntime JS
+@inject NavigationManager Nav
 
 <nav class="custom-navbar">
     <div class="container nav-wrapper">
@@ -7,39 +10,82 @@
         <div class="nav-right-group">
             <div class="nav-links">
                 <NavLink class="nav-link-custom" href="/exhibitions">ВЫСТАВКИ</NavLink>
-                <NavLink class="nav-link-custom" href="/orders">МОИ ЗАКАЗЫ</NavLink>
-
-                @if (IsAdmin)
+    
+                @if (isLoggedIn)
                 {
-                    <div class="nav-dropdown-custom">
-                        <span class="nav-link-custom">АДМИНИСТРИРОВАНИЕ</span>
-                        <div class="dropdown-content">
-                            <NavLink href="/admin/museum">МУЗЕЙ</NavLink>
-                            <NavLink href="/admin/system">СИСТЕМА</NavLink>
-                        </div>
-                    </div>
+                    <NavLink class="nav-link-custom" href="/orders">МОИ ЗАКАЗЫ</NavLink>
+
+                    @if (isSystemAdmin)
+                    {
+                        <NavLink class="nav-link-custom" href="/admin/system">СИСТЕМА</NavLink>
+                    }
+        
+                    @if (isMuseumAdmin)
+                    {
+                        <NavLink class="nav-link-custom" href="/admin/museum">АДМИНКА МУЗЕЯ</NavLink>
+                    }
+
+                    <span class="user-email-nav" style="color: white; margin: 0 15px;">@userEmail</span>
+                    <a class="btn-login-custom" style="cursor:pointer" @onclick="Logout">ВЫЙТИ</a>
+                }
+                else
+                {
+                    <NavLink class="btn-login-custom" href="/login">ВОЙТИ</NavLink>
                 }
             </div>
-
-            <NavLink class="btn-login-custom" href="/login">ВОЙТИ</NavLink>
         </div>
     </div>
 </nav>
+
 @code {
-    private bool IsAdmin = false;
+    private bool isLoggedIn = false;
+    private bool isSystemAdmin = false;
+    private bool isMuseumAdmin = false;
+    private string userEmail = "";
 
-    [CascadingParameter]
-    private Task<AuthenticationState>? AuthStateTask { get; set; }
-
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (AuthStateTask != null)
+        if (firstRender)
         {
-            var authState = await AuthStateTask;
-            var user = authState.User;
-
-            IsAdmin = user.IsInRole("Администратор музея") ||
-                      user.IsInRole("Администратор системы");
+            await LoadUserStatus();
         }
+    }
+
+    private async Task LoadUserStatus()
+    {
+        try
+        {
+            var token = await JS.InvokeAsync<string>("auth.getToken");
+            if (!string.IsNullOrEmpty(token) && token.Contains("."))
+            {
+                token = token.Trim('"');
+                var handler = new JwtSecurityTokenHandler();
+                if (handler.CanReadToken(token))
+                {
+                    var jwt = handler.ReadJwtToken(token);
+                    var claims = jwt.Claims.ToList();
+
+                    userEmail = claims.FirstOrDefault(c => c.Type == "email" || c.Type == ClaimTypes.Email || c.Type == "sub")?.Value ?? "";
+                    
+                    var roles = claims
+                        .Where(c => c.Type == "role" || c.Type == ClaimTypes.Role || c.Type.Contains("role"))
+                        .Select(c => c.Value).ToList();
+
+                    isLoggedIn = true;
+                    isSystemAdmin = roles.Contains("Администратор системы");
+                    isMuseumAdmin = roles.Contains("Администратор музея");
+                    
+                    StateHasChanged();
+                }
+            }
+        }
+        catch { isLoggedIn = false; }
+    }
+
+    private async Task Logout()
+    {
+        await JS.InvokeVoidAsync("auth.removeToken");
+        isLoggedIn = false;
+        Nav.NavigateTo("/login", forceLoad: true);
     }
 }

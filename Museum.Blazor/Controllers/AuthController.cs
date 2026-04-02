@@ -11,22 +11,33 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
 
-    public AuthController(IAuthService authService)
+    private readonly IUserRepository _userRepo;
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly ILogger<AuthController> _logger;
+
+    public AuthController(IAuthService authService, IUserRepository userRepo, IPasswordHasher passwordHasher, ILogger<AuthController> logger)
     {
         _authService = authService;
+        _userRepo = userRepo;
+        _passwordHasher = passwordHasher;
+        _logger = logger;
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var token = await _authService.LoginAsync(request.Email, request.Password);
-
-        if (token == null)
+        var user = await _userRepo.GetByEmailAsync(request.Email);
+        if (user != null && _passwordHasher.VerifyPassword(request.Password, user.Password))
         {
-            return Unauthorized(new { message = "Неверный email или пароль" });
+            var token = await _authService.LoginAsync(request.Email, request.Password);
+            if (token != null)
+            {
+                return Ok(new { token });
+            }
         }
-        
-        return Ok(new { token });
+
+        _logger.LogWarning("Login failed for {Email}", request.Email);
+        return Unauthorized(new { message = "Неверный email или пароль" });
     }
 
     [HttpPost("register")]

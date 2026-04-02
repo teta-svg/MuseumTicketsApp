@@ -1,13 +1,35 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.JSInterop;
 using Museum.Application.Interfaces;
 using Museum.Application.Services;
+using Museum.Blazor.Components;
 using Museum.Persistence;
 using Museum.Persistence.Repositories;
 using System.Text;
-using Museum.Blazor.Components;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var key = Encoding.UTF8.GetBytes("MySuperSecretKeyForMuseumTicketsApp2026!");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -18,8 +40,6 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<MuseumTicketsDBContext>(options =>
     options.UseSqlServer(connectionString));
-
-builder.Services.AddOpenApi();
 
 // Repositories
 builder.Services.AddScoped<IExhibitionRepository, ExhibitionRepository>();
@@ -38,21 +58,6 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, FakePaymentService>();
 
-// JWT Authentication
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-        };
-    });
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", p =>
@@ -65,7 +70,6 @@ builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7289/")
 });
-
 
 var app = builder.Build();
 
@@ -99,14 +103,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseAntiforgery();
-
 app.MapControllers();
 
 app.MapRazorComponents<App>()

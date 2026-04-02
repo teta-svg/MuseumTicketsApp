@@ -122,5 +122,32 @@ namespace Museum.WebAPI.Controllers
                 fileName
             );
         }
+
+        [HttpGet("export/users")]
+        [Authorize(Roles = "Администратор системы")]
+        public async Task<IActionResult> ExportUsers()
+        {
+            var (fileContent, fileName) = await _adminService.ExportUsersAsync();
+
+            return File(
+                fileContent,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileName
+            );
+        }
+
+        [HttpGet("export/exhibitions")]
+        [Authorize(Roles = "Администратор системы")]
+        public async Task<IActionResult> ExportExhibitions()
+        {
+            var (fileContent, fileName) = await _adminService.ExportExhibitionsAsync();
+
+            return File(
+                fileContent,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileName
+            );
+        }
+
     }
 }

@@ -331,7 +331,99 @@ public class AdminService : IAdminService
         using var ms = new MemoryStream();
         workbook.SaveAs(ms);
 
-        return (ms.ToArray(), $"Statistics_{DateTime.Now:yyyy-MM-dd}.xlsx");
+        return (ms.ToArray(), $"Statistics_{DateTime.Now:dd.MM.yyyy}.xlsx");
     }
+
+    public async Task<(byte[] FileContent, string FileName)> ExportUsersAsync()
+    {
+        using var workbook = new ClosedXML.Excel.XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("Users");
+
+        worksheet.Cell(1, 1).Value = "Email";
+        worksheet.Cell(1, 2).Value = "Имя";
+        worksheet.Cell(1, 3).Value = "Фамилия";
+        worksheet.Cell(1, 4).Value = "Отчество";
+        worksheet.Cell(1, 5).Value = "Телефон";
+        worksheet.Cell(1, 6).Value = "Пароль (хэш)";
+        worksheet.Cell(1, 7).Value = "Роль";
+        worksheet.Range(1, 1, 1, 7).Style.Font.SetBold();
+
+        var users = await _userRepo.GetAllAsync();
+        int row = 2;
+
+        foreach (var user in users)
+        {
+            worksheet.Cell(row, 1).Value = user.Email;
+            worksheet.Cell(row, 2).Value = user.FirstName;
+            worksheet.Cell(row, 3).Value = user.LastName;
+            worksheet.Cell(row, 4).Value = user.MiddleName;
+            worksheet.Cell(row, 5).Value = user.Phone;
+            worksheet.Cell(row, 6).Value = "[PROTECTED]";
+            worksheet.Cell(row, 7).Value = user.Role;
+            row++;
+        }
+
+        worksheet.Columns().AdjustToContents();
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        return (stream.ToArray(), "Users_Export.xlsx");
+    }
+    public async Task<(byte[] FileContent, string FileName)> ExportExhibitionsAsync()
+    {
+        using var workbook = new ClosedXML.Excel.XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("Exhibitions");
+
+        worksheet.Cell(1, 1).Value = "Название выставки";
+        worksheet.Cell(1, 2).Value = "Фото (URL)";
+        worksheet.Cell(1, 3).Value = "Музей";
+        worksheet.Cell(1, 4).Value = "Город";
+        worksheet.Cell(1, 5).Value = "Улица";
+        worksheet.Cell(1, 6).Value = "Дом";
+        worksheet.Cell(1, 7).Value = "Дата начала";
+        worksheet.Cell(1, 8).Value = "Дата окончания";
+
+        worksheet.Range(1, 1, 1, 8).Style.Font.SetBold();
+
+        var exhibitions = await _exhibitionRepo.GetAllAsync();
+        int row = 2;
+
+        foreach (var ex in exhibitions)
+        {
+            if (ex.MuseumExhibitions != null && ex.MuseumExhibitions.Any())
+            {
+                foreach (var me in ex.MuseumExhibitions)
+                {
+                    worksheet.Cell(row, 1).Value = ex.Name;
+                    worksheet.Cell(row, 2).Value = ex.Photo;
+                    worksheet.Cell(row, 3).Value = me.Museum?.Name;
+                    worksheet.Cell(row, 4).Value = me.Museum?.City;
+                    worksheet.Cell(row, 5).Value = me.Museum?.Street;
+                    worksheet.Cell(row, 6).Value = me.Museum?.House;
+
+                    worksheet.Cell(row, 7).Value = me.StartDate.ToDateTime(TimeOnly.MinValue);
+                    worksheet.Cell(row, 8).Value = me.EndDate.ToDateTime(TimeOnly.MinValue);
+
+                    worksheet.Cell(row, 7).Style.DateFormat.Format = "dd.mm.yyyy";
+                    worksheet.Cell(row, 8).Style.DateFormat.Format = "dd.mm.yyyy";
+                    row++;
+                }
+            }
+            else
+            {
+                worksheet.Cell(row, 1).Value = ex.Name;
+                worksheet.Cell(row, 2).Value = ex.Photo;
+                row++;
+            }
+        }
+
+        worksheet.Columns().AdjustToContents();
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        return (stream.ToArray(), "Exhibitions_Export.xlsx");
+    }
+
+
 
 }

@@ -1,20 +1,24 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-
+﻿@using Microsoft.AspNetCore.Components.Web
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="Museum.Blazor.styles.css" />
-    <link rel="stylesheet" href="app.css" /> 
+    <link rel="stylesheet" href="app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <HeadOutlet />
+    <HeadOutlet @rendermode="NoPrerender" />
 </head>
-
 <body>
-    <Routes />
+    <Routes @rendermode="NoPrerender" />
+
+    <script src="js/auth.js"></script>
     <script src="_framework/blazor.web.js"></script>
 </body>
-
 </html>
+
+@code {
+    private IComponentRenderMode NoPrerender = new InteractiveServerRenderMode(false);
+}
