@@ -1,72 +1,163 @@
 ﻿@page "/exhibitions/{id:int}"
 @inject HttpClient Https
 @using Museum.Application.DTOs
-
-@code {
-    [Parameter]
-    public int id { get; set; }
-
-    private ExhibitionDetailsDTO? details;
-
-    protected override async Task OnInitializedAsync()
-    {
-        details = await Https.GetFromJsonAsync<ExhibitionDetailsDTO>($"api/Exhibitions/{id}");
-    }
-}
+@using System.Net.Http.Json
 
 <div class="container py-4">
     @if (details == null)
     {
-        <div class="text-center py-5"><div class="spinner-border"></div></div>
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary"></div>
+            <p class="mt-2 text-muted">Загрузка данных...</p>
+        </div>
     }
     else
     {
         <div class="row g-4">
             <div class="col-12 col-md-6">
-                <img src="@(string.IsNullOrEmpty(details.Photo) ? "https://placehold.co/800x500" : details.Photo)" class="img-fluid rounded" />
-                <h2 class="mt-3">@details.Name</h2>
-                <p class="text-muted">@details.MuseumName — @details.MuseumComplex</p>
-                <p><strong>Адрес:</strong> @details.Address</p>
-                <p><strong>Период:</strong> @details.StartDate.ToString("dd.MM.yyyy") — @details.EndDate.ToString("dd.MM.yyyy") (@details.DurationDays дн.)</p>
-                <p><strong>Статус:</strong> @details.StatusMessage</p>
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <img src="@(string.IsNullOrEmpty(details.Photo) ? "https://dummyimage.com" : details.Photo)" class="img-fluid" />
+                    <div class="card-body p-4">
+                        <h2 class="fw-bold mb-0">@details.Name</h2>
+                        <p class="text-primary mb-3">@details.MuseumName</p>
+                        
+                        <div class="p-3 bg-light rounded-4 mb-4">
+                            <p class="mb-1 small"><strong>Адрес:</strong> @details.Address</p>
+                            <p class="mb-1 small"><strong>Период:</strong> @details.StartDate.ToString("dd.MM.yy") — @details.EndDate.ToString("dd.MM.yy")</p>
+                            <p class="mb-0 small"><strong>Статус выставки:</strong> <span class="badge bg-info text-white">@details.StatusMessage</span></p>
+                        </div>
+
+                        <h6 class="fw-bold mb-3"><i class="bi bi-calendar3 me-2"></i>Расписание работы</h6>
+                        @if (details.Schedule != null && details.Schedule.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm table-borderless mb-0 small">
+                                    <tbody>
+                                        @foreach (var s in details.Schedule.OrderBy(x => x.WeekDay))
+                                        {
+                                            <tr>
+                                                <td class="text-muted" style="width: 50%">@GetDayName(s.WeekDay)</td>
+                                                <td class="fw-bold text-end">@s.Open.ToString("HH:mm") — @s.Close.ToString("HH:mm")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small">Расписание не указано</p>
+                        }
+                    </div>
+                </div>
             </div>
+
             <div class="col-12 col-md-6">
-                <div class="card p-3 mb-3">
-                    <h5>Билеты</h5>
-                    @if (details.Tickets.Any())
-                    {
-                        <ul class="list-group list-group-flush">
-                            @foreach (var t in details.Tickets)
+                <div class="card shadow-sm p-4 border-0 rounded-4">
+                    <h5 class="fw-bold mb-4">Билеты</h5>
+                    
+                    <div class="card shadow-sm p-4 border-0 rounded-4">
+                        <h5 class="fw-bold mb-4">Билеты</h5>
+    
+                        @if (details.Tickets == null || !details.Tickets.Any(t => t.Status == "Доступен"))
+                        {
+                            <div class="alert alert-danger border-0 rounded-3 py-3">
+                                <i class="bi bi-x-circle-fill me-2"></i> Продажи билетов отменены или завершены.
+                            </div>
+                        }
+                        else
+                        {
+                            @foreach (var t in details.Tickets.Where(x => x.Status == "Доступен"))
                             {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
                                     <div>
                                         <div class="fw-bold">@t.Type</div>
-                                        <div class="text-muted">Количество: @t.Quantity</div>
+                                        <div class="text-muted small">Осталось: @t.Quantity шт.</div>
                                     </div>
-                                    <div class="fw-bold">@t.Price.ToString("N0") ₽</div>
-                                </li>
+                                    <div class="text-end">
+                                        <div class="fw-bold h5 mb-2">@t.Price.ToString("N0") ₽</div>
+                    
+                                        <button class="btn btn-primary px-4 rounded-pill shadow-sm"
+                                                @onclick="() => OpenOrderModal(t)"
+                                                disabled="@(t.Quantity <= 0)">
+                                            @(t.Quantity > 0 ? "Купить" : "Закончились")
+                                        </button>
+                                    </div>
+                                </div>
                             }
-                        </ul>
-                    }
-                    else
-                    {
-                        <div class="text-muted">Билеты не доступны</div>
-                    }
-                </div>
+                        }
+    
+                        <div class="mt-4 p-3 bg-light rounded-3">
+                            <small class="text-muted">
+                                Гарантия возврата билетов за 24 часа до начала.
+                            </small>
+                        </div>
+                    </div>
 
-                <div class="card p-3">
-                    <h5>График работы</h5>
-                    @if (details.Schedule.Any())
-                    {
-                        <ul class="list-unstyled mb-0">
-                            @foreach (var s in details.Schedule)
-                            {
-                                <li>@s.WeekDay: @s.Open.ToString() - @s.Close.ToString()</li>
-                            }
-                        </ul>
-                    }
+                    
+                    <div class="mt-4 p-3 bg-primary-subtle rounded-3">
+                        <small class="text-primary">
+                            <i class="bi bi-shield-check me-1"></i> Гарантия возврата билетов за 24 часа до начала.
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
     }
 </div>
+
+@if (selectedTicket != null)
+{
+    <div class="modal d-block shadow" style="background: rgba(0,0,0,0.6); z-index: 1050;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 p-4 pb-0">
+                    <h5 class="modal-title fw-bold">Оформление билета</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p class="text-muted">Вы покупаете: <strong>@selectedTicket.Type</strong></p>
+                    <h3 class="fw-bold text-primary mb-4">@selectedTicket.Price.ToString("N0") ₽</h3>
+                    <div class="alert alert-light border small">
+                        Механизм оплаты будет подключен после настройки платежного шлюза.
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button class="btn btn-primary w-100 py-2 fw-bold rounded-3" @onclick="CloseModal">Понятно</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    private ExhibitionDetailsDTO? details;
+    private TicketInfoDTO? selectedTicket;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            details = await Https.GetFromJsonAsync<ExhibitionDetailsDTO>($"api/Exhibitions/{id}");
+        }
+        catch { details = null; }
+    }
+
+    private void OpenOrderModal(TicketInfoDTO t) => selectedTicket = t;
+    private void CloseModal() => selectedTicket = null;
+
+    private string GetDayName(int day) => day switch
+    {
+        1 => "Понедельник",
+        2 => "Вторник",
+        3 => "Среда",
+        4 => "Четверг",
+        5 => "Пятница",
+        6 => "Суббота",
+        7 => "Воскресенье",
+        _ => "—"
+    };
+}

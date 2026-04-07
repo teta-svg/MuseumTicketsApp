@@ -34,7 +34,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Program.cs в проекте API
 builder.Services.AddControllers();
+
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

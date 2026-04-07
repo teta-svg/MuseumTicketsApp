@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Museum.Domain;
-using Museum.Persistence.Configurations;
-using System.Text.Json;
+
 using MuseumEntity = Museum.Domain.Museum;
 
 namespace Museum.Persistence;
@@ -28,7 +27,7 @@ public partial class MuseumTicketsDBContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=MuseumTicketsDB;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=MuseumTicketsDB;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

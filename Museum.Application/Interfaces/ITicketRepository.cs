@@ -9,5 +9,6 @@ namespace Museum.Application.Interfaces
         Task SaveChangesAsync();
         Task<List<Ticket>> GetTicketsByExhibitionAsync(int exhibitionId);
         Task<List<Ticket>> GetAllAsync();
+        Task DeleteAsync(Ticket ticket);
     }
 }

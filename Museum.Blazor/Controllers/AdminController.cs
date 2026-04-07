@@ -149,5 +149,14 @@ namespace Museum.WebAPI.Controllers
             );
         }
 
+        [HttpGet("exhibitions/list")]
+        [Authorize(Roles = "Администратор музея,Администратор системы")]
+        public async Task<IActionResult> GetExhibitionsList()
+        {
+            var data = await _adminService.GetExhibitionSalesAsync();
+            return Ok(data);
+        }
+
+
     }
 }

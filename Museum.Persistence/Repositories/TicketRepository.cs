@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Museum.Application.Interfaces;
 using Museum.Domain;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Museum.Persistence.Repositories
 {
@@ -44,5 +41,11 @@ namespace Museum.Persistence.Repositories
         {
             return await _context.Tickets.Include(t => t.TicketPrices).ToListAsync();
         }
+        public async Task DeleteAsync(Ticket ticket)
+        {
+            _context.Tickets.Remove(ticket);
+            await Task.CompletedTask;
+        }
+
     }
 }

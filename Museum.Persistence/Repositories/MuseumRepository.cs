@@ -38,5 +38,17 @@ namespace Museum.Persistence.Repositories
                                        && m.House == house);
         }
 
+        public async Task<MuseumComplex?> GetComplexByNameAsync(string name)
+        {
+            return await _context.MuseumComplexes
+                .FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
+        }
+
+        public async Task AddComplexAsync(MuseumComplex complex)
+        {
+            await _context.MuseumComplexes.AddAsync(complex);
+        }
+
+
     }
 }

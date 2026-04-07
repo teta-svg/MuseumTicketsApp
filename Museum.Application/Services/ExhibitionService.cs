@@ -83,10 +83,15 @@ public class ExhibitionService : IExhibitionService
         var tickets = exhibition.Tickets
             .SelectMany(t => t.TicketPrices.Select(tp => new TicketInfoDTO
             {
+                TicketID = t.TicketId,
                 Type = t.Type,
-                Price = tp.Price
+                Price = tp.Price,
+                Quantity = t.AvailableQuantity,
+                Status = t.Status
             }))
             .ToList();
+
+
 
         var minPrice = tickets.Any() ? tickets.Min(t => t.Price) : 0;
 

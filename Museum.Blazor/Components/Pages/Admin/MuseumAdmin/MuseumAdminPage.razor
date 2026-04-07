@@ -1,3 +1,265 @@
 ﻿@page "/admin/museum"
+@using Museum.Application.DTOs
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Headers
+@inject HttpClient Http
+@inject IJSRuntime JS
 
-<h3>Админка музея</h3>
+@rendermode InteractiveServer
+
+<div class="container-fluid py-4 bg-light min-vh-100">
+    <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded-4 shadow-sm mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-0">Управление выставками</h3>
+            <p class="text-muted mb-0 small">Создание, редактирование и расписание</p>
+        </div>
+        <button class="btn btn-primary px-4 py-2 rounded-3 shadow-sm fw-bold" @onclick="() => OpenModal()">
+            <i class="bi bi-plus-lg me-2"></i>Новая выставка
+        </button>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="row">
+                @if (salesReports == null)
+                {
+                    <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+                }
+                else if (!salesReports.Any())
+                {
+                    <div class="alert alert-info rounded-4 border-0 shadow-sm p-4">
+                        <i class="bi bi-info-circle me-2"></i>Выставок пока нет или доступ ограничен.
+                    </div>
+                }
+                else
+                {
+                    @foreach (var report in salesReports)
+                    {
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm rounded-4 @(selectedReport?.ExhibitionId == report.ExhibitionId ? "border border-primary border-2 shadow" : "")"
+                                 @onclick="() => selectedReport = report" style="cursor:pointer; transition: 0.3s transform;">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold text-primary">@report.ExhibitionName</h5>
+                                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                        <span class="text-muted small">ID: @report.ExhibitionId</span>
+                                        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">Продано: @report.TicketsSold</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            @if (selectedReport != null)
+            {
+                <div class="card border-0 shadow rounded-4 sticky-top" style="top: 20px;">
+                    <div class="card-header bg-dark text-white rounded-top-4 py-3 text-center border-0">Управление</div>
+                    <div class="card-body p-4 text-center">
+                        <h6 class="fw-bold mb-4">@selectedReport.ExhibitionName</h6>
+                        <button class="btn btn-outline-primary w-100 mb-3 py-2 rounded-3" @onclick="() => OpenModal(selectedReport.ExhibitionId)">
+                            <i class="bi bi-pencil-square me-2"></i>Редактировать
+                        </button>
+                        <button class="btn btn-warning w-100 mb-3 py-2 fw-bold rounded-3 shadow-sm" @onclick="CloseSales">
+                            <i class="bi bi-lock-fill me-2"></i>Закрыть продажи
+                        </button>
+                        <hr />
+                        <button class="btn btn-outline-danger w-100 py-2 rounded-3" @onclick="DeleteExhibition">
+                            <i class="bi bi-trash me-2"></i>Удалить выставку
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (showModal)
+{
+    <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.6); overflow-y: auto; z-index: 1050;">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-primary text-white border-0 p-4">
+                    <h5 class="modal-title fw-bold">@(isEditMode ? "📝 Редактирование" : "🏛️ Новая выставка")</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                
+                <EditForm Model="@newExhibition" OnValidSubmit="SaveExhibition">
+                    <DataAnnotationsValidator />
+                    <div class="modal-body p-4 bg-white" style="max-height: 70vh; overflow-y: auto;">
+                        <ValidationSummary class="alert alert-danger py-2 mb-4 rounded-3 small" />
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Название</label>
+                                <InputText @bind-Value="newExhibition.Name" class="form-control" placeholder="Название..." required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Дата начала</label>
+                                <InputDate @bind-Value="newExhibition.StartDate" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Дата окончания</label>
+                                <InputDate @bind-Value="newExhibition.EndDate" class="form-control" />
+                            </div>
+                        </div>
+
+                        <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">Локация музея</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold">Музей / Комплекс</label>
+                                <InputText @bind-Value="newExhibition.MuseumName" class="form-control" placeholder="Напр: Эрмитаж" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Город</label>
+                                <InputText @bind-Value="newExhibition.City" class="form-control" required />
+                            </div>
+                            <div class="col-md-6"><label class="form-label small fw-bold">Улица</label><InputText @bind-Value="newExhibition.Street" class="form-control" required /></div>
+                            <div class="col-md-2"><label class="form-label small fw-bold">Дом</label><InputText @bind-Value="newExhibition.House" class="form-control" required /></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-primary fw-bold mb-0">Билеты</h6>
+                            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="AddTicket">+ Добавить</button>
+                        </div>
+                        @foreach (var ticket in newExhibition.Tickets)
+                        {
+                            <div class="row g-2 mb-2 p-2 bg-light rounded-3 mx-0">
+                                <div class="col-md-5"><InputText @bind-Value="ticket.Type" class="form-control form-control-sm" placeholder="Тип" required /></div>
+                                <div class="col-md-3"><InputNumber @bind-Value="ticket.Quantity" class="form-control form-control-sm" placeholder="Кол-во" /></div>
+                                <div class="col-md-3"><InputNumber @bind-Value="ticket.Price" class="form-control form-control-sm" placeholder="Цена" /></div>
+                                <div class="col-md-1 text-end"><button type="button" class="btn btn-link text-danger p-0" @onclick="() => newExhibition.Tickets.Remove(ticket)"><i class="bi bi-trash fs-5"></i></button></div>
+                            </div>
+                        }
+
+                        <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                            <h6 class="text-primary fw-bold mb-0">График работы</h6>
+                            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="AddSchedule">+ Добавить время</button>
+                        </div>
+                        @foreach (var sch in newExhibition.Schedules)
+                        {
+                            <div class="card card-body bg-light border-0 mb-3 p-3 rounded-3 shadow-xs">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="small fw-bold">Период</label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="date" class="form-control" @onchange="@(e => sch.StartDate = DateOnly.Parse(e.Value.ToString()))" value="@sch.StartDate.ToString("yyyy-MM-dd")" />
+                                            <input type="date" class="form-control" @onchange="@(e => sch.EndDate = DateOnly.Parse(e.Value.ToString()))" value="@sch.EndDate.ToString("yyyy-MM-dd")" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="small fw-bold">Время</label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="time" class="form-control" @onchange="@(e => sch.Open = TimeOnly.Parse(e.Value.ToString()))" value="@sch.Open.ToString("HH:mm")" />
+                                            <input type="time" class="form-control" @onchange="@(e => sch.Close = TimeOnly.Parse(e.Value.ToString()))" value="@sch.Close.ToString("HH:mm")" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1 text-end align-self-end"><button type="button" class="btn btn-link text-danger border-0" @onclick="() => newExhibition.Schedules.Remove(sch)"><i class="bi bi-x-circle-fill fs-5"></i></button></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="modal-footer border-0 bg-light p-4">
+                        <button type="button" class="btn btn-outline-secondary px-4 rounded-3" @onclick="CloseModal">Отмена</button>
+                        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-3 shadow">
+                            @(isEditMode ? "Сохранить изменения" : "Создать всё")
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ExhibitionSalesDto> salesReports;
+    private ExhibitionSalesDto selectedReport;
+    private bool showModal = false;
+    private bool isEditMode = false;
+    private int currentId = 0;
+    private CreateExhibitionAdminDto newExhibition = new();
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            await SetAuthHeader();
+            salesReports = await Http.GetFromJsonAsync<List<ExhibitionSalesDto>>("api/admin/exhibitions/list");
+        }
+        catch { salesReports = new(); }
+    }
+
+    private async Task SetAuthHeader()
+    {
+        var token = await JS.InvokeAsync<string>("auth.getToken");
+        if (!string.IsNullOrEmpty(token))
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    }
+
+    private async Task OpenModal(int? id = null)
+    {
+        if (id.HasValue)
+        {
+            isEditMode = true;
+            currentId = id.Value;
+            var selected = salesReports.FirstOrDefault(x => x.ExhibitionId == id.Value);
+            newExhibition = new CreateExhibitionAdminDto { Name = selected?.ExhibitionName, StartDate = DateTime.Today, EndDate = DateTime.Today.AddMonths(1), Tickets = new(), Schedules = new() };
+        }
+        else
+        {
+            isEditMode = false;
+            newExhibition = new CreateExhibitionAdminDto { StartDate = DateTime.Today, EndDate = DateTime.Today.AddMonths(1), Tickets = new() { new CreateTicketAdminDto { Type = "Взрослый", Quantity = 100, Price = 500 } }, Schedules = new() };
+        }
+        showModal = true;
+    }
+
+    private void CloseModal() => showModal = false;
+    private void AddTicket() => newExhibition.Tickets.Add(new CreateTicketAdminDto { Type = "Новый", Quantity = 50, Price = 300 });
+    private void AddSchedule() => newExhibition.Schedules.Add(new CreateScheduleAdminDto { StartDate = DateOnly.FromDateTime(DateTime.Today), EndDate = DateOnly.FromDateTime(DateTime.Today), Open = new TimeOnly(10, 0), Close = new TimeOnly(19, 0) });
+
+    private async Task SaveExhibition()
+    {
+        try
+        {
+            await SetAuthHeader();
+            HttpResponseMessage res = isEditMode
+                ? await Http.PutAsJsonAsync($"api/admin/exhibitions/{currentId}", newExhibition)
+                : await Http.PostAsJsonAsync("api/admin/exhibitions", newExhibition);
+
+            if (res.IsSuccessStatusCode)
+            {
+                showModal = false;
+                await LoadData();
+                await JS.InvokeVoidAsync("alert", "Успешно сохранено!");
+            }
+            else
+            {
+                var err = await res.Content.ReadAsStringAsync();
+                await JS.InvokeVoidAsync("alert", $"Ошибка: {err}");
+            }
+        }
+        catch (Exception ex) { await JS.InvokeVoidAsync("alert", $"Критическая ошибка: {ex.Message}"); }
+    }
+
+    private async Task CloseSales()
+    {
+        if (selectedReport == null) return;
+        await SetAuthHeader();
+        var res = await Http.PostAsync($"api/admin/exhibitions/{selectedReport.ExhibitionId}/close-sales", null);
+        if (res.IsSuccessStatusCode) await JS.InvokeVoidAsync("alert", "Продажи закрыты");
+    }
+
+    private async Task DeleteExhibition()
+    {
+        if (selectedReport == null) return;
+        if (!await JS.InvokeAsync<bool>("confirm", "Вы уверены?")) return;
+        await SetAuthHeader();
+        var res = await Http.DeleteAsync($"api/admin/exhibitions/{selectedReport.ExhibitionId}");
+        if (res.IsSuccessStatusCode) { await LoadData(); selectedReport = null; }
+    }
+}

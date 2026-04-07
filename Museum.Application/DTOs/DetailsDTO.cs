@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Museum.Application.DTOs
+﻿namespace Museum.Application.DTOs
 {
     public class ExhibitionDetailsDTO
     {
@@ -36,9 +33,12 @@ namespace Museum.Application.DTOs
 
     public class TicketInfoDTO
     {
+        public int TicketID { get; set; }
         public string Type { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
+        public string Status { get; set; }
     }
+
 }
 
