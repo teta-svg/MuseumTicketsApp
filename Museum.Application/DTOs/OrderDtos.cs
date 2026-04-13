@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Museum.Application.DTOs
+﻿namespace Museum.Application.DTOs
 {
     public class CreateOrderDto
     {

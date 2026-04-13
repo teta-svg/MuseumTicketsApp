@@ -1,4 +1,5 @@
-﻿using Museum.Application.DTOs;
+﻿using ClosedXML.Excel;
+using Museum.Application.DTOs;
 using Museum.Application.Interfaces;
 using Museum.Domain;
 
@@ -198,9 +199,6 @@ public class AdminService : IAdminService
         await _scheduleRepo.SaveChangesAsync();
     }
 
-
-
-
     public async Task DeleteExhibitionAsync(int id)
     {
         var exhibition = await _exhibitionRepo.GetByIdAsync(id);
@@ -331,44 +329,51 @@ public class AdminService : IAdminService
         {
             ExhibitionId = e.ExhibitionId,
             ExhibitionName = e.Name,
-            TicketsSold = 0
+
+            TicketsSold = e.Tickets
+                .SelectMany(t => t.OrderItems ?? new List<OrderItem>())
+                .Where(oi => oi.Order != null && oi.Order.Status == "Оплачен")
+                .Sum(oi => oi.Quantity)
         }).ToList();
     }
+
 
 
     //эксель
     public async Task<(byte[] FileContent, string FileName)> GetStatisticsAsync()
     {
-        var orders = await _orderRepo.GetAllAsync();
+        var allOrders = await _orderRepo.GetAllAsync();
         var users = await _userRepo.GetAllAsync();
         var tickets = await _ticketRepo.GetAllAsync();
         var exhibitions = await _exhibitionRepo.GetAllAsync();
 
+        var paidOrders = allOrders.Where(o => o.Status == "Оплачен").ToList();
 
-        decimal revenue = orders.Sum(o => o.Tickets.Sum(t => t.Price * t.Quantity));
+        decimal revenue = paidOrders.Sum(o => o.Tickets.Sum(t => t.Price * t.Quantity));
 
-        using var workbook = new ClosedXML.Excel.XLWorkbook();
+        int totalPhysicalTickets = tickets.Sum(t => t.AvailableQuantity);
+
+        using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Статистика");
 
         ws.Cell(1, 1).Value = "Показатель";
         ws.Cell(1, 2).Value = "Значение";
-
         ws.Range("A1:B1").Style.Font.Bold = true;
-        ws.Range("A1:B1").Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.LightGray;
+        ws.Range("A1:B1").Style.Fill.BackgroundColor = XLColor.LightGray;
 
-        ws.Cell(2, 1).Value = "Всего выставок";
+        ws.Cell(2, 1).Value = "Всего выставок в системе";
         ws.Cell(2, 2).Value = exhibitions.Count();
 
-        ws.Cell(3, 1).Value = "Всего билетов";
-        ws.Cell(3, 2).Value = tickets.Count;
+        ws.Cell(3, 1).Value = "Общее кол-во билетов (остаток)";
+        ws.Cell(3, 2).Value = totalPhysicalTickets;
 
-        ws.Cell(4, 1).Value = "Пользователей";
+        ws.Cell(4, 1).Value = "Зарегистрировано пользователей";
         ws.Cell(4, 2).Value = users.Count();
 
-        ws.Cell(5, 1).Value = "Всего заказов";
-        ws.Cell(5, 2).Value = orders.Count();
+        ws.Cell(5, 1).Value = "Успешных заказов (Оплачено)";
+        ws.Cell(5, 2).Value = paidOrders.Count;
 
-        ws.Cell(6, 1).Value = "Общая выручка";
+        ws.Cell(6, 1).Value = "Итоговая чистая выручка";
         ws.Cell(6, 2).Value = revenue;
         ws.Cell(6, 2).Style.NumberFormat.Format = "#,##0.00 ₽";
 
@@ -376,8 +381,7 @@ public class AdminService : IAdminService
 
         using var ms = new MemoryStream();
         workbook.SaveAs(ms);
-
-        return (ms.ToArray(), $"Statistics_{DateTime.Now:dd.MM.yyyy}.xlsx");
+        return (ms.ToArray(), $"Summary_Report_{DateTime.Now:dd_MM_yyyy}.xlsx");
     }
 
     public async Task<(byte[] FileContent, string FileName)> ExportUsersAsync()
@@ -390,8 +394,7 @@ public class AdminService : IAdminService
         worksheet.Cell(1, 3).Value = "Фамилия";
         worksheet.Cell(1, 4).Value = "Отчество";
         worksheet.Cell(1, 5).Value = "Телефон";
-        worksheet.Cell(1, 6).Value = "Пароль (хэш)";
-        worksheet.Cell(1, 7).Value = "Роль";
+        worksheet.Cell(1, 6).Value = "Роль";
         worksheet.Range(1, 1, 1, 7).Style.Font.SetBold();
 
         var users = await _userRepo.GetAllAsync();
@@ -404,8 +407,7 @@ public class AdminService : IAdminService
             worksheet.Cell(row, 3).Value = user.LastName;
             worksheet.Cell(row, 4).Value = user.MiddleName;
             worksheet.Cell(row, 5).Value = user.Phone;
-            worksheet.Cell(row, 6).Value = "[PROTECTED]";
-            worksheet.Cell(row, 7).Value = user.Role;
+            worksheet.Cell(row, 6).Value = user.Role;
             row++;
         }
 

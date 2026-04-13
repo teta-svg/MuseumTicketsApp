@@ -20,5 +20,10 @@ namespace Museum.Application.Services
         public Task<bool> CheckTicketAvailabilityAsync(int ticketId, int quantity)
             => _orderRepository.CheckTicketAvailabilityAsync(ticketId, quantity);
 
+        public async Task<OrderDto?> GetOrderByIdAsync(int orderId)
+        {
+            return await _orderRepository.GetOrderByIdAsync(orderId);
+        }
+
     }
 }

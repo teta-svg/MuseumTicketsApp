@@ -22,64 +22,62 @@
 
 <div class="login-container">
     <div class="tab-buttons">
-    <button type="button" class="@LoginTabClass" @onclick='() => SetTab("login")'>Р’С…РѕРґ</button>
-    <button type="button" class="@RegisterTabClass" @onclick='() => SetTab("register")'>Р РµРіРёСЃС‚СЂР°С†РёСЏ</button>
-</div>
-
+        <button type="button" class="@LoginTabClass" @onclick='() => SetTab("login")'>Вход</button>
+        <button type="button" class="@RegisterTabClass" @onclick='() => SetTab("register")'>Регистрация</button>
+    </div>
 
     @if (activeTab == "login")
-{
-    <EditForm Model="loginModel" OnValidSubmit="SubmitLogin" FormName="LoginForm">
-        <DataAnnotationsValidator />
-        <InputText @bind-Value="loginModel.Email" placeholder="Email" class="form-control" />
-        <InputText @bind-Value="loginModel.Password" placeholder="РџР°СЂРѕР»СЊ" type="password" class="form-control" />
-        <button type="submit" class="btn btn-primary w-100">Р’РѕР№С‚Рё</button>
-    </EditForm>
-}
-else
-{
-    <EditForm Model="regModel" OnValidSubmit="SubmitRegister" FormName="RegisterForm">
-        <DataAnnotationsValidator />
-        <ValidationSummary class="text-danger small mb-3" />
+    {
+        <EditForm Model="loginModel" OnValidSubmit="SubmitLogin" FormName="LoginForm">
+            <DataAnnotationsValidator />
+            <InputText @bind-Value="loginModel.Email" placeholder="Email" class="form-control" />
+            <InputText @bind-Value="loginModel.Password" placeholder="Пароль" type="password" class="form-control" />
+            <button type="submit" class="btn btn-primary w-100">Войти</button>
+        </EditForm>
+    }
+    else
+    {
+        <EditForm Model="regModel" OnValidSubmit="SubmitRegister" FormName="RegisterForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger small mb-3" />
 
-        <div class="mb-2">
-            <label class="small">Р¤Р°РјРёР»РёСЏ *</label>
-            <InputText @bind-Value="regModel.LastName" placeholder="Р¤Р°РјРёР»РёСЏ" class="form-control" />
-            <ValidationMessage For="@(() => regModel.LastName)" class="text-danger small" />
-        </div>
+            <div class="mb-2">
+                <label class="small">Фамилия *</label>
+                <InputText @bind-Value="regModel.LastName" placeholder="Фамилия" class="form-control" />
+                <ValidationMessage For="@(() => regModel.LastName)" class="text-danger small" />
+            </div>
 
-        <div class="mb-2">
-            <label class="small">РРјСЏ *</label>
-            <InputText @bind-Value="regModel.FirstName" placeholder="РРјСЏ" class="form-control" />
-            <ValidationMessage For="@(() => regModel.FirstName)" class="text-danger small" />
-        </div>
+            <div class="mb-2">
+                <label class="small">Имя *</label>
+                <InputText @bind-Value="regModel.FirstName" placeholder="Имя" class="form-control" />
+                <ValidationMessage For="@(() => regModel.FirstName)" class="text-danger small" />
+            </div>
 
-        <div class="mb-2">
-            <label class="small">РћС‚С‡РµСЃС‚РІРѕ (РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ)</label>
-            <InputText @bind-Value="regModel.MiddleName" placeholder="РћС‚С‡РµСЃС‚РІРѕ" class="form-control" />
-        </div>
+            <div class="mb-2">
+                <label class="small">Отчество (необязательно)</label>
+                <InputText @bind-Value="regModel.MiddleName" placeholder="Отчество" class="form-control" />
+            </div>
 
-        <div class="mb-2">
-            <label class="small">Email *</label>
-            <InputText @bind-Value="regModel.Email" placeholder="Email" class="form-control" />
-            <ValidationMessage For="@(() => regModel.Email)" class="text-danger small" />
-        </div>
+            <div class="mb-2">
+                <label class="small">Email *</label>
+                <InputText @bind-Value="regModel.Email" placeholder="Email" class="form-control" />
+                <ValidationMessage For="@(() => regModel.Email)" class="text-danger small" />
+            </div>
 
-        <div class="mb-2">
-            <label class="small">РџР°СЂРѕР»СЊ *</label>
-            <InputText @bind-Value="regModel.Password" placeholder="РџР°СЂРѕР»СЊ" type="password" class="form-control" />
-            <ValidationMessage For="@(() => regModel.Password)" class="text-danger small" />
-        </div>
+            <div class="mb-2">
+                <label class="small">Пароль *</label>
+                <InputText @bind-Value="regModel.Password" placeholder="Пароль" type="password" class="form-control" />
+                <ValidationMessage For="@(() => regModel.Password)" class="text-danger small" />
+            </div>
 
-        <div class="mb-2">
-            <label class="small">РќРѕРјРµСЂ С‚РµР»РµС„РѕРЅР° (РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ)</label>
-            <InputText @bind-Value="regModel.Phone" placeholder="РќРѕРјРµСЂ С‚РµР»РµС„РѕРЅР°" class="form-control" />
-        </div>
+            <div class="mb-2">
+                <label class="small">Номер телефона</label>
+                <InputText @bind-Value="regModel.Phone" placeholder="Телефон" class="form-control" />
+            </div>
 
-        <button type="submit" class="btn btn-success w-100 mt-2">Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊСЃСЏ</button>
-    </EditForm>
-}
-
+            <button type="submit" class="btn btn-success w-100 mt-2">Зарегистрироваться</button>
+        </EditForm>
+    }
 
     @if (!string.IsNullOrEmpty(message))
     {
@@ -91,7 +89,6 @@ else
     private string activeTab = "login";
     private string message;
     public class AuthResponse { public string Token { get; set; } }
-
 
     [SupplyParameterFromForm]
     private LoginRequest loginModel { get; set; } = new();
@@ -108,7 +105,7 @@ else
         message = "";
     }
 
-private async Task SubmitLogin()
+    private async Task SubmitLogin()
     {
         try 
         {
@@ -124,18 +121,18 @@ private async Task SubmitLogin()
                 var jwt = handler.ReadJwtToken(token);
                 var roles = jwt.Claims
                     .Where(c => c.Type == "role" || c.Type.Contains("role"))
-                    .Select(c => c.Value).ToList();
+                    .Select(c => c.Value.ToLower()).ToList();
 
-                if (roles.Contains("РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ СЃРёСЃС‚РµРјС‹"))
+                if (roles.Contains("администратор системы"))
                      Navigation.NavigateTo("/admin/system", true);
-                else if (roles.Contains("РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ РјСѓР·РµСЏ"))
+                else if (roles.Contains("администратор музея"))
                      Navigation.NavigateTo("/admin/museum", true);
                 else
                      Navigation.NavigateTo("/", true);
             }
-            else { message = "РќРµРІРµСЂРЅС‹Р№ Р»РѕРіРёРЅ РёР»Рё РїР°СЂРѕР»СЊ"; }
+            else { message = "Неверный логин или пароль"; }
         }
-        catch (Exception ex) { message = "РћС€РёР±РєР°: " + ex.Message; }
+        catch (Exception ex) { message = "Ошибка: " + ex.Message; }
     }
 
     private async Task SubmitRegister()
@@ -143,12 +140,12 @@ private async Task SubmitLogin()
         var resp = await Http.PostAsJsonAsync("api/Auth/register", regModel);
         if (resp.IsSuccessStatusCode)
         {
-            message = "РЈСЃРїРµС…!";
+            message = "Успех! Теперь войдите.";
             activeTab = "login";
         }
         else
         {
-            message = "РћС€РёР±РєР° СЂРµРіРёСЃС‚СЂР°С†РёРё";
+            message = "Ошибка регистрации.";
         }
     }
 }

@@ -3,196 +3,348 @@
 @using Microsoft.AspNetCore.Authorization
 @using System.Net.Http.Headers
 @using System.IdentityModel.Tokens.Jwt
+@using Microsoft.AspNetCore.Components.Forms
 
 @inject HttpClient Http
 @inject IJSRuntime JS
 @inject NavigationManager Nav
 
-<div class="container-fluid mt-4">
-    <h2 class="mb-4">Панель системного администратора</h2>
+<style>
+    :root {
+        --bg-dark: #000000;
+        --bg-deep: #212126;
+        --accent-gray: #4b4b47;
+        --light-gray: #c2c0bd;
+        --bg-white: #f5f5f5;
+    }
 
-    <div class="row">
-        <div class="col-md-3">
-            <div class="list-group shadow-sm">
-                <button class="list-group-item list-group-item-action @(activeTab == "users" ? "active" : "")" @onclick='() => activeTab = "users"'>Пользователи</button>
-                <button class="list-group-item list-group-item-action @(activeTab == "orders" ? "active" : "")" @onclick='LoadOrders'>Все заказы</button>
-                <button class="list-group-item list-group-item-action @(activeTab == "stats" ? "active" : "")" @onclick='LoadSales'>Статистика</button>
-                <button class="list-group-item list-group-item-action @(activeTab == "export" ? "active" : "")" @onclick='() => activeTab = "export"'>Экспорт данных</button>
+    .admin-container { background-color: var(--bg-white); min-height: 90vh; }
+    
+    .sidebar-btn {
+        text-align: left;
+        border: none !important;
+        border-radius: 10px !important;
+        margin-bottom: 8px;
+        padding: 12px 20px;
+        color: var(--accent-gray);
+        transition: 0.3s;
+    }
+
+    .sidebar-btn.active {
+        background-color: var(--bg-dark) !important;
+        color: white !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .content-card {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid var(--light-gray);
+        min-height: 600px;
+    }
+
+    .table-museum thead { background-color: var(--bg-dark); color: white; }
+    
+    .btn-museum-dark {
+        background-color: var(--bg-dark);
+        color: white;
+        border-radius: 50px;
+        font-weight: 600;
+        padding: 8px 20px;
+    }
+
+    .btn-museum-dark:hover { background-color: var(--accent-gray); color: white; }
+
+    .badge-paid { background-color: var(--bg-dark); color: white; border-radius: 50px; padding: 5px 12px; }
+    .badge-wait { background-color: var(--light-gray); color: var(--bg-dark); border-radius: 50px; padding: 5px 12px; }
+</style>
+
+<div class="admin-container p-4">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" style="border-color: var(--light-gray) !important;">
+    <h2 class="fw-bold mb-0" style="letter-spacing: -1.5px; color: var(--bg-dark);">SYSTEM ADMINISTRATION</h2>
+    <div class="d-flex align-items-center">
+        <span class="badge bg-dark rounded-pill px-3 py-2 fw-bold" style="letter-spacing: 1px; font-size: 0.7rem;">ROOT</span>
+    </div>
+</div>
+
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="list-group border-0 bg-transparent">
+                    <button class="list-group-item list-group-item-action sidebar-btn @(activeTab == "users" ? "active" : "")" 
+                            @onclick='() => SetTab("users")'>
+                        <i class="bi bi-people-fill me-2"></i> Персонал
+                    </button>
+                    <button class="list-group-item list-group-item-action sidebar-btn @(activeTab == "orders" ? "active" : "")" 
+                            @onclick='LoadOrders'>
+                        <i class="bi bi-receipt-cutoff me-2"></i> Все заказы
+                    </button>
+                    <button class="list-group-item list-group-item-action sidebar-btn @(activeTab == "stats" ? "active" : "")" 
+                            @onclick='LoadSales'>
+                        <i class="bi bi-graph-up-arrow me-2"></i> Статистика
+                    </button>
+                    <button class="list-group-item list-group-item-action sidebar-btn @(activeTab == "export" ? "active" : "")" 
+                            @onclick='() => SetTab("export")'>
+                        <i class="bi bi-cloud-download me-2"></i> Экспорт
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <div class="col-md-9 border rounded p-4 bg-white shadow-sm">
-            @if (activeTab == "users")
-            {
-                <h4>Управление персоналом</h4>
-                <EditForm Model="newUser" OnValidSubmit="CreateUser" class="row g-3 mt-2">
-                    <div class="col-md-6"><input @bind="newUser.Email" class="form-control" placeholder="Email" required /></div>
-                    <div class="col-md-6"><input @bind="newUser.Password" type="password" class="form-control" placeholder="Пароль" required /></div>
-                    <div class="col-md-4"><input @bind="newUser.FirstName" class="form-control" placeholder="Имя" required /></div>
-                    <div class="col-md-4"><input @bind="newUser.LastName" class="form-control" placeholder="Фамилия" required /></div>
-                    <div class="col-md-4">
-                        <select @bind="selectedRole" class="form-select">
-                            <option value="Администратор музея">Администратор музея</option>
-                            <option value="Администратор системы">Администратор системы</option>
-                        </select>
-                    </div>
-                    <div class="col-12"><button type="submit" class="btn btn-primary">Создать сотрудника</button></div>
-                </EditForm>
-                <hr class="my-4" />
-                <div class="input-group w-75">
-                    <input @bind="emailToDelete" class="form-control" placeholder="Email для удаления" />
-                    <button class="btn btn-danger" @onclick="DeleteUser">Удалить пользователя</button>
-                </div>
-            }
-            else if (activeTab == "orders")
-            {
-                <h4>Все заказы</h4>
-                @if (orders == null)
-                {
-                    <div class="spinner-border text-primary"></div>
-                }
-                else
-                {
-                    <table class="table table-striped mt-3">
-                        <thead>
-                            <tr>
-                                <th>№ Заказа</th>
-                                <th>Дата</th>
-                                <th>Сумма</th>
-                                <th>Статус</th>
-                                <th>Действие</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var order in orders)
-                            {
-                                <tr>
-                                    <td>@order.OrderId</td>
-                                    <td>@order.CreatedAt.ToShortDateString()</td>
-                                    <td>@order.Tickets.Sum(t => t.Price * t.Quantity) ₽</td>
-                                    <td><span class="badge @(order.Status == "Оплачен" ? "bg-success" : "bg-warning text-dark")">@order.Status</span></td>
-                                    <td>
-                                        @if (order.Status != "Оплачен")
-                                        {
-                                            <button class="btn btn-sm btn-outline-success" @onclick='() => UpdateStatus(order.OrderId, "Оплачен")'>Оплатить</button>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-            }
-            else if (activeTab == "stats")
-            {
-                <h4>Продажи выставок</h4>
-                <button class="btn btn-success mb-3" @onclick="DownloadExcel">Скачать Excel отчет</button>
-                @if (sales == null)
-                {
-                    <p>Загрузка...</p>
-                }
-                else
-                {
-                    <div class="list-group">
-                        @foreach (var s in sales)
-                        {
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <strong>@s.ExhibitionName</strong>
-                                <span class="badge bg-primary">Билетов: @s.TicketsSold</span>
+            <div class="col-md-9">
+                <div class="content-card p-4 shadow-sm">
+                    
+                    @if (activeTab == "users")
+                    {
+                        <h4 class="fw-bold mb-4">Добавление сотрудника</h4>
+                        <EditForm Model="newUser" OnValidSubmit="CreateUser" class="row g-3 p-4 bg-light rounded-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="small fw-bold">Email</label>
+                                <input @bind="newUser.Email" class="form-control" placeholder="example@museum.ru" required />
                             </div>
-                        }
-                    </div>
-                }
-            }
-            else if (activeTab == "export")
-            {
-                <h4>Выгрузка данных в Excel</h4>
-                <div class="row mt-4">
-                    <div class="col-md-6 border-end text-center">
-                        <p>Список всех сотрудников и посетителей</p>
-                        <button class="btn btn-outline-primary" @onclick='() => ExportFile("api/admin/export/users", "Users_List.xlsx")'>Скачать пользователей</button>
-                    </div>
-                    <div class="col-md-6 text-center">
-                        <p>Список всех выставок и музеев</p>
-                        <button class="btn btn-outline-success" @onclick='() => ExportFile("api/admin/export/exhibitions", "Exhibitions_List.xlsx")'>Скачать выставки</button>
-                    </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold">Пароль</label>
+                                <input @bind="newUser.Password" type="password" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <input @bind="newUser.FirstName" class="form-control" placeholder="Имя" required />
+                            </div>
+                            <div class="col-md-4">
+                                <input @bind="newUser.LastName" class="form-control" placeholder="Фамилия" required />
+                            </div>
+                            <div class="col-md-4">
+                                <select @bind="selectedRole" class="form-select">
+                                    <option value="Администратор музея">Администратор музея</option>
+                                    <option value="Администратор системы">Администратор системы</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-museum-dark w-100 py-2">СОЗДАТЬ УЧЕТНУЮ ЗАПИСЬ</button>
+                            </div>
+                        </EditForm>
+
+                        <h5 class="fw-bold mt-5 mb-3 text-danger">Удаление доступа</h5>
+                        <div class="input-group mb-3">
+                            <input @bind="emailToDelete" class="form-control" placeholder="Email пользователя" />
+                            <button class="btn btn-danger px-4" @onclick="DeleteUser">УДАЛИТЬ</button>
+                        </div>
+                    }
+
+                    else if (activeTab == "orders")
+                    {
+                         <div class="mb-4">
+        <h4 class="fw-bold m-0">Реестр транзакций</h4>
+    </div>
+
+    @if (orders == null)
+    {
+        <div class="text-center py-5"><div class="spinner-border text-dark"></div></div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="padding-left: 20px;">ID</th>
+                        <th>Дата</th>
+                        <th>Сумма</th>
+                        <th style="padding-right: 20px;">Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in orders.OrderByDescending(o => o.CreatedAt))
+                    {
+                        <tr style="border-bottom: 1px solid var(--light-gray);">
+                            <td class="fw-bold" style="padding-left: 20px;">#@order.OrderId</td>
+                            <td class="small text-muted">@order.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td class="fw-bold">@order.Tickets.Sum(t => t.Price * t.Quantity).ToString("N0") ₽</td>
+                            <td style="padding-right: 20px;">
+                                <span class="badge @(order.Status == "Оплачен" ? "badge-paid" : "badge-wait")">
+                                    @order.Status
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+                    }
+
+else if (activeTab == "stats")
+{
+    <h4 class="fw-bold mb-4" style="color: var(--bg-dark); letter-spacing: -0.5px;">Статистика продаж</h4>
+    
+    <div class="p-5 rounded-4 shadow-lg position-relative overflow-hidden mb-3" 
+         style="background: var(--bg-dark); color: white; min-height: 260px; display: flex; flex-direction: column; justify-content: center; width: 100%;">
+        
+        <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: rgba(255,255,255,0.03); border-radius: 50%;"></div>
+
+        <div class="small text-uppercase opacity-50 fw-bold mb-3" style="letter-spacing: 3px;">Выручка </div>
+        
+        <div class="d-flex align-items-baseline">
+            <span class="display-1 fw-bolder" style="letter-spacing: -3px;">
+                @(orders?.Where(o => o.Status == "Оплачен").Sum(o => o.Tickets.Sum(t => t.Price * t.Quantity)).ToString("N0") ?? "0")
+            </span>
+            <span class="display-5 ms-4 fw-light opacity-50">₽</span>
+        </div>
+        
+        <div class="mt-4 small opacity-50 d-flex align-items-center">
+            <div style="width: 8px; height: 8px; background: #28a745; border-radius: 50%; margin-right: 10px; box-shadow: 0 0 10px #28a745;"></div>
+            <span>Данные синхронизированы в реальном времени</span>
+        </div>
+    </div>
+
+    <button class="btn btn-museum-dark w-100 py-3 rounded-pill fw-bold text-uppercase shadow-sm" 
+            style="letter-spacing: 2px; font-size: 0.85rem; border: 1px solid var(--accent-gray);" 
+            @onclick="DownloadExcel">
+        <i class="bi bi-file-earmark-arrow-down me-2"></i> Сформировать и скачать отчет в Excel
+    </button>
+}
+
+
+
+                    else if (activeTab == "export")
+                    {
+                        <h4 class="fw-bold mb-4">Экспорт системы</h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-4 border rounded-4 text-center">
+                                    <p class="text-muted">Список всех пользователей</p>
+                                    <button class="btn btn-outline-dark w-100" @onclick='() => ExportFile("api/admin/export/users", "Users.xlsx")'>СКАЧАТЬ</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-4 border rounded-4 text-center">
+                                    <p class="text-muted">Данные по выставкам</p>
+                                    <button class="btn btn-outline-dark w-100" @onclick='() => ExportFile("api/admin/export/exhibitions", "Exhibitions.xlsx")'>СКАЧАТЬ</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
                 </div>
-            }
+            </div>
         </div>
     </div>
 </div>
 
 @if (!string.IsNullOrEmpty(message))
 {
-    <div class="alert alert-info mt-3 mx-4">@message</div>
+    <div class="position-fixed bottom-0 end-0 m-4" style="z-index: 2000;">
+        <div class="alert alert-dark shadow-lg border-0 rounded-3">@message</div>
+    </div>
 }
 
 @code {
     private string activeTab = "users";
     private string message = "";
+    private string adminEmail = "";
     private string selectedRole = "Администратор музея";
     private string emailToDelete = "";
-    private bool isSystemAdmin = false;
+    private bool isInitialized = false;
 
     private RegisterRequest newUser = new();
-    private List<OrderDto> orders;
-    private IEnumerable<ExhibitionSalesDto> sales;
+    private List<OrderDto>? orders;
+
+    private async Task LoadSales() 
+{ 
+    activeTab = "stats"; 
+    message = "";
+    
+    if (orders == null)
+    {
+        await LoadOrders(); 
+    }
+    StateHasChanged();
+}
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var token = await JS.InvokeAsync<string>("auth.getToken");
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            
             if (string.IsNullOrEmpty(token))
             {
                 Nav.NavigateTo("/login");
                 return;
             }
 
-            var handler = new JwtSecurityTokenHandler();
-            var jwt = handler.ReadJwtToken(token.Trim('"'));
-            var roles = jwt.Claims
-                .Where(c => c.Type == "role" || c.Type.Contains("role"))
-                .Select(c => c.Value).ToList();
+            try 
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(token.Trim('"'));
+                
+                var roles = jwt.Claims
+                    .Where(c => c.Type == "role" || c.Type.Contains("role"))
+                    .Select(c => c.Value.ToLower()).ToList();
 
-            if (!roles.Contains("Администратор системы"))
-            {
-                Nav.NavigateTo("/");
-            }
-            else
-            {
-                isSystemAdmin = true;
+                if (!roles.Contains("администратор системы"))
+                {
+                    Nav.NavigateTo("/");
+                    return;
+                }
+
+                adminEmail = jwt.Claims.FirstOrDefault(c => c.Type == "email" || c.Type == "sub")?.Value ?? "";
+                isInitialized = true;
                 StateHasChanged();
+            }
+            catch 
+            {
+                Nav.NavigateTo("/login");
             }
         }
     }
 
     private async Task SetAuthHeader()
     {
-        var token = await JS.InvokeAsync<string>("auth.getToken");
+        var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
         if (!string.IsNullOrEmpty(token))
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Trim('"'));
     }
 
-    private async Task ExportFile(string url, string fileName)
+    private void SetTab(string tab) 
+    { 
+        activeTab = tab; 
+        message = "";
+    }
+
+    private async Task LoadOrders()
     {
-        message = "Формирование файла...";
+        SetTab("orders");
         await SetAuthHeader();
-        var resp = await Http.GetAsync(url);
+        try 
+        {
+            orders = await Http.GetFromJsonAsync<List<OrderDto>>("api/admin/orders");
+        }
+        catch (Exception ex) 
+        { 
+            orders = new(); 
+            message = "Ошибка загрузки: " + ex.Message;
+        }
+    }
+
+    private async Task UpdateStatus(int id, string status)
+    {
+        await SetAuthHeader();
+        var resp = await Http.PatchAsync($"api/admin/orders/{id}/status?status={status}", null);
         if (resp.IsSuccessStatusCode)
         {
-            var content = await resp.Content.ReadAsByteArrayAsync();
-            await JS.InvokeVoidAsync("saveAsFile", fileName, Convert.ToBase64String(content));
-            message = "Файл успешно скачан!";
+            message = "Статус обновлен!";
+            await LoadOrders();
         }
-        else { message = "Ошибка при выгрузке данных."; }
+        else { message = "Не удалось обновить статус"; }
     }
 
     private async Task CreateUser()
     {
         await SetAuthHeader();
         var resp = await Http.PostAsJsonAsync($"api/admin/users?role={selectedRole}", newUser);
-        message = resp.IsSuccessStatusCode ? "Сотрудник создан!" : "Ошибка при создании";
+        message = resp.IsSuccessStatusCode ? "Сотрудник успешно создан!" : "Ошибка создания";
+        if(resp.IsSuccessStatusCode) newUser = new();
     }
 
     private async Task DeleteUser()
@@ -203,29 +355,18 @@
         message = resp.IsSuccessStatusCode ? "Пользователь удален" : "Ошибка удаления";
     }
 
-    private async Task LoadOrders()
+    private async Task ExportFile(string url, string fileName)
     {
-        activeTab = "orders";
+        message = "Генерация файла...";
         await SetAuthHeader();
-        orders = await Http.GetFromJsonAsync<List<OrderDto>>("api/admin/orders");
+        var resp = await Http.GetAsync(url);
+        if (resp.IsSuccessStatusCode)
+        {
+            var content = await resp.Content.ReadAsByteArrayAsync();
+            await JS.InvokeVoidAsync("saveAsFile", fileName, Convert.ToBase64String(content));
+            message = "Загрузка завершена";
+        }
     }
 
-    private async Task UpdateStatus(int id, string status)
-    {
-        await SetAuthHeader();
-        var resp = await Http.PatchAsync($"api/admin/orders/{id}/status?status={status}", null);
-        if (resp.IsSuccessStatusCode) await LoadOrders();
-    }
-
-    private async Task LoadSales()
-    {
-        activeTab = "stats";
-        await SetAuthHeader();
-        sales = await Http.GetFromJsonAsync<IEnumerable<ExhibitionSalesDto>>("api/admin/reports/sales");
-    }
-
-    private async Task DownloadExcel()
-    {
-        await ExportFile("api/admin/statistics", "Museum_Statistics.xlsx");
-    }
+    private async Task DownloadExcel() { await ExportFile("api/admin/statistics", "Report.xlsx"); }
 }

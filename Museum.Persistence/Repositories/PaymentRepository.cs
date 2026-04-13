@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Museum.Application.Interfaces;
-using Museum.Domain;
+﻿using Museum.Domain;
 using Museum.Persistence;
 
 public class PaymentRepository : IPaymentRepository

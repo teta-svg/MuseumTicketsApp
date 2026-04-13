@@ -15,20 +15,29 @@ public class FakePaymentService : IPaymentService
 
     public async Task<bool> PayOrderAsync(int orderId, decimal amount)
     {
-        var orders = await _orderRepo.GetOrdersByUserIdAsync(orderId.ToString());
-        var existingOrder = await _orderRepo.GetOrderByIdAsync(orderId);
-        if (existingOrder == null)
+        var existingOrderDto = await _orderRepo.GetOrderByIdAsync(orderId);
+        if (existingOrderDto == null)
             throw new InvalidOperationException($"Заказ {orderId} не найден");
 
-        if (existingOrder.Status == "Оплачен")
+        if (existingOrderDto.Status == "Оплачен")
             throw new InvalidOperationException("Заказ уже оплачен");
 
-        var totalPrice = existingOrder.Tickets.Sum(t => t.Price * t.Quantity);
+        var totalPrice = existingOrderDto.Tickets.Sum(t => t.Price * t.Quantity);
         if (amount != totalPrice)
-            throw new InvalidOperationException($"Сумма оплаты {amount} не совпадает с итоговой стоимостью заказа {totalPrice}");
+            throw new InvalidOperationException("Сумма оплаты не совпадает");
 
         await Task.Delay(_rnd.Next(1000, 2000));
         bool success = _rnd.NextDouble() < 0.8;
+
+        if (success)
+        {
+
+            await _orderRepo.ConfirmPaymentAndDeductTicketsAsync(orderId);
+        }
+        else
+        {
+            await _orderRepo.UpdateOrderStatusAsync(orderId, "Отменён");
+        }
 
         var payment = new Payment
         {
@@ -39,8 +48,7 @@ public class FakePaymentService : IPaymentService
         };
         await _paymentRepo.AddAsync(payment);
 
-        await _orderRepo.UpdateOrderStatusAsync(orderId, success ? "Оплачен" : "Отменён");
-
         return success;
     }
+
 }

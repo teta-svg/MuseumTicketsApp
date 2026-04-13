@@ -7,14 +7,70 @@
 
 @rendermode InteractiveServer
 
-<div class="container-fluid py-4 bg-light min-vh-100">
-    <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded-4 shadow-sm mb-4">
+<style>
+    :root {
+        --bg-dark: #000000;
+        --bg-deep: #212126;
+        --accent-gray: #4b4b47;
+        --light-gray: #c2c0bd;
+        --bg-white: #f5f5f5;
+    }
+
+    .card-museum {
+        border: 1px solid var(--light-gray) !important;
+        transition: all 0.3s ease;
+    }
+
+        .card-museum:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+
+    .card-selected {
+        border: 2px solid var(--bg-dark) !important;
+        background-color: var(--bg-white);
+    }
+
+    .btn-museum-dark {
+        background-color: var(--bg-dark);
+        color: white;
+        border-radius: 50px;
+        font-weight: 700;
+        transition: 0.3s;
+    }
+
+        .btn-museum-dark:hover {
+            background-color: var(--accent-gray);
+            color: white;
+        }
+    
+    .btn-outline-museum {
+        border: 2px solid var(--bg-dark);
+        color: var(--bg-dark);
+        border-radius: 50px;
+        font-weight: 700;
+    }
+
+        .btn-outline-museum:hover {
+            background-color: var(--bg-dark);
+            color: white;
+        }
+
+    .badge-museum {
+        background-color: var(--accent-gray);
+        color: white;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container-fluid py-4" style="background-color: var(--bg-white); min-vh-100;">
+    <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded-4 shadow-sm mb-4 border" style="border-color: var(--light-gray) !important;">
         <div>
-            <h3 class="fw-bold text-dark mb-0">Управление выставками</h3>
-            <p class="text-muted mb-0 small">Создание, редактирование и расписание</p>
+            <h3 class="fw-bold text-dark mb-0" style="letter-spacing: -1px;">УПРАВЛЕНИЕ ВЫСТАВКАМИ</h3>
+            <p class="text-muted mb-0 small">Редактирование контента и контроль продаж</p>
         </div>
-        <button class="btn btn-primary px-4 py-2 rounded-3 shadow-sm fw-bold" @onclick="() => OpenModal()">
-            <i class="bi bi-plus-lg me-2"></i>Новая выставка
+        <button class="btn btn-museum-dark px-4 py-2 shadow-sm" @onclick="() => OpenModal()">
+            <i class="bi bi-plus-lg me-2"></i>НОВАЯ ВЫСТАВКА
         </button>
     </div>
 
@@ -23,12 +79,13 @@
             <div class="row">
                 @if (salesReports == null)
                 {
-                    <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+                    <div class="text-center p-5"><div class="spinner-border text-dark"></div></div>
                 }
                 else if (!salesReports.Any())
                 {
-                    <div class="alert alert-info rounded-4 border-0 shadow-sm p-4">
-                        <i class="bi bi-info-circle me-2"></i>Выставок пока нет или доступ ограничен.
+                    <div class="card border-0 rounded-4 p-5 text-center shadow-sm">
+                        <i class="bi bi-folder2-open display-4 text-muted mb-3"></i>
+                        <h5 class="text-muted">Список пуст</h5>
                     </div>
                 }
                 else
@@ -36,13 +93,15 @@
                     @foreach (var report in salesReports)
                     {
                         <div class="col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm rounded-4 @(selectedReport?.ExhibitionId == report.ExhibitionId ? "border border-primary border-2 shadow" : "")"
-                                 @onclick="() => selectedReport = report" style="cursor:pointer; transition: 0.3s transform;">
+                            <div class="card h-100 card-museum border-0 shadow-sm rounded-4 @(selectedReport?.ExhibitionId == report.ExhibitionId ? "card-selected shadow" : "")"
+                                 @onclick="() => selectedReport = report" style="cursor:pointer;">
                                 <div class="card-body p-4">
-                                    <h5 class="fw-bold text-primary">@report.ExhibitionName</h5>
+                                    <h5 class="fw-bold text-dark mb-1">@report.ExhibitionName</h5>
+                                    <div class="text-muted small mb-3">ID объекта: @report.ExhibitionId</div>
+                                    
                                     <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                                        <span class="text-muted small">ID: @report.ExhibitionId</span>
-                                        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">Продано: @report.TicketsSold</span>
+                                        <div class="small fw-bold text-uppercase opacity-50" style="letter-spacing: 1px;">Билетов продано</div>
+                                        <span class="badge badge-museum px-3 py-2 rounded-pill">@report.TicketsSold шт.</span>
                                     </div>
                                 </div>
                             </div>
@@ -55,117 +114,181 @@
         <div class="col-lg-4">
             @if (selectedReport != null)
             {
-                <div class="card border-0 shadow rounded-4 sticky-top" style="top: 20px;">
-                    <div class="card-header bg-dark text-white rounded-top-4 py-3 text-center border-0">Управление</div>
+                <div class="card border-0 shadow-lg rounded-4 sticky-top animate__animated animate__fadeInRight" style="top: 20px; border: 1px solid var(--light-gray) !important;">
+                    <div class="card-header bg-dark text-white rounded-top-4 py-3 text-center border-0 fw-bold small letter-spacing-2">
+                        ДЕЙСТВИЯ
+                    </div>
                     <div class="card-body p-4 text-center">
-                        <h6 class="fw-bold mb-4">@selectedReport.ExhibitionName</h6>
-                        <button class="btn btn-outline-primary w-100 mb-3 py-2 rounded-3" @onclick="() => OpenModal(selectedReport.ExhibitionId)">
-                            <i class="bi bi-pencil-square me-2"></i>Редактировать
+                        <h6 class="fw-bold mb-4 text-uppercase">@selectedReport.ExhibitionName</h6>
+                        
+                        <button class="btn btn-outline-museum w-100 mb-3 py-2" @onclick="() => OpenModal(selectedReport.ExhibitionId)">
+                            <i class="bi bi-pencil-square me-2"></i>РЕДАКТИРОВАТЬ
                         </button>
-                        <button class="btn btn-warning w-100 mb-3 py-2 fw-bold rounded-3 shadow-sm" @onclick="CloseSales">
-                            <i class="bi bi-lock-fill me-2"></i>Закрыть продажи
+                        
+                        <button class="btn btn-dark w-100 mb-3 py-2 fw-bold shadow-sm" @onclick="CloseSales">
+                            <i class="bi bi-lock-fill me-2"></i>ЗАКРЫТЬ ПРОДАЖИ
                         </button>
-                        <hr />
-                        <button class="btn btn-outline-danger w-100 py-2 rounded-3" @onclick="DeleteExhibition">
-                            <i class="bi bi-trash me-2"></i>Удалить выставку
+                        
+                        <hr class="my-4" style="border-color: var(--light-gray);" />
+                        
+                        <button class="btn btn-link text-danger text-decoration-none w-100 py-2 small fw-bold" @onclick="DeleteExhibition">
+                            <i class="bi bi-trash me-2"></i>УДАЛИТЬ ОБЪЕКТ
                         </button>
                     </div>
+                </div>
+            }
+            else
+            {
+                <div class="p-5 text-center border rounded-4 border-dashed" style="border: 2px dashed var(--light-gray) !important;">
+                    <p class="text-muted small mb-0">Выберите выставку из списка для управления</p>
                 </div>
             }
         </div>
     </div>
 </div>
 
+
 @if (showModal)
 {
-    <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.6); overflow-y: auto; z-index: 1050;">
+    <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.8); overflow-y: auto; z-index: 1050;">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="modal-header bg-primary text-white border-0 p-4">
-                    <h5 class="modal-title fw-bold">@(isEditMode ? "📝 Редактирование" : "🏛️ Новая выставка")</h5>
+                <div class="modal-header border-0 p-4" style="background-color: #000000; color: #ffffff;">
+                    <h5 class="modal-title fw-bold" style="letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.9rem;">
+                        @(isEditMode ? "Редактирование объекта" : "Регистрация новой выставки")
+                    </h5>
                     <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
                 </div>
-                
+
                 <EditForm Model="@newExhibition" OnValidSubmit="SaveExhibition">
                     <DataAnnotationsValidator />
-                    <div class="modal-body p-4 bg-white" style="max-height: 70vh; overflow-y: auto;">
-                        <ValidationSummary class="alert alert-danger py-2 mb-4 rounded-3 small" />
+                    <div class="modal-body p-4 bg-white" style="max-height: 75vh; overflow-y: auto;">
+                        <ValidationSummary class="alert alert-dark py-2 mb-4 rounded-3 small" />
 
                         <div class="row g-3 mb-4">
                             <div class="col-12">
-                                <label class="form-label small fw-bold">Название</label>
-                                <InputText @bind-Value="newExhibition.Name" class="form-control" placeholder="Название..." required />
+                                <label class="form-label small fw-bold text-uppercase opacity-75" 
+                                style="letter-spacing: 0.5px;">Название экспозиции</label>
+                                <InputText @bind-Value="newExhibition.Name" class="form-control border-dark-subtle rounded-3" 
+                                placeholder="Введите название..." required />
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Дата начала</label>
-                                <InputDate @bind-Value="newExhibition.StartDate" class="form-control" />
+                                <label class="form-label small fw-bold text-uppercase opacity-75">Дата начала</label>
+                                <InputDate @bind-Value="newExhibition.StartDate" class="form-control border-dark-subtle rounded-3" />
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Дата окончания</label>
-                                <InputDate @bind-Value="newExhibition.EndDate" class="form-control" />
+                                <label class="form-label small fw-bold text-uppercase opacity-75">Дата окончания</label>
+                                <InputDate @bind-Value="newExhibition.EndDate" class="form-control border-dark-subtle rounded-3" />
                             </div>
                         </div>
 
-                        <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">Локация музея</h6>
+                        <h6 class="fw-bold mb-3 border-bottom pb-2 text-uppercase" 
+                        style="color: #4b4b47; letter-spacing: 1px; font-size: 0.8rem;">Локация музея</h6>
                         <div class="row g-3 mb-4">
                             <div class="col-md-12">
-                                <label class="form-label small fw-bold">Музей / Комплекс</label>
-                                <InputText @bind-Value="newExhibition.MuseumName" class="form-control" placeholder="Напр: Эрмитаж" required />
+                                <label class="form-label small fw-bold text-uppercase opacity-75">Музей / Комплекс</label>
+                                <InputText @bind-Value="newExhibition.MuseumName" class="form-control border-dark-subtle rounded-3" 
+                                placeholder="Напр: Эрмитаж" required />
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label small fw-bold">Город</label>
-                                <InputText @bind-Value="newExhibition.City" class="form-control" required />
+                                <label class="form-label small fw-bold text-uppercase opacity-75">Город</label>
+                                <InputText @bind-Value="newExhibition.City" class="form-control border-dark-subtle rounded-3" required />
                             </div>
-                            <div class="col-md-6"><label class="form-label small fw-bold">Улица</label><InputText @bind-Value="newExhibition.Street" class="form-control" required /></div>
-                            <div class="col-md-2"><label class="form-label small fw-bold">Дом</label><InputText @bind-Value="newExhibition.House" class="form-control" required /></div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-uppercase opacity-75">Улица</label>
+                                <InputText @bind-Value="newExhibition.Street" class="form-control border-dark-subtle rounded-3" required />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold text-uppercase opacity-75">Дом</label>
+                                <InputText @bind-Value="newExhibition.House" class="form-control border-dark-subtle rounded-3" required />
+                            </div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="text-primary fw-bold mb-0">Билеты</h6>
-                            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="AddTicket">+ Добавить</button>
+                        <div class="d-flex justify-content-between align-items-center mb-3 pt-2 border-top">
+                            <h6 class="fw-bold mb-0 text-uppercase" style="color: #4b4b47; letter-spacing: 1px; font-size: 0.8rem;">Категории билетов</h6>
+                            <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 fw-bold" style="font-size: 0.7rem;" @onclick="AddTicket">
+                                + ДОБАВИТЬ ТИП
+                            </button>
                         </div>
-                        @foreach (var ticket in newExhibition.Tickets)
+
+                        @foreach (var ticketItem in newExhibition.Tickets)
                         {
-                            <div class="row g-2 mb-2 p-2 bg-light rounded-3 mx-0">
-                                <div class="col-md-5"><InputText @bind-Value="ticket.Type" class="form-control form-control-sm" placeholder="Тип" required /></div>
-                                <div class="col-md-3"><InputNumber @bind-Value="ticket.Quantity" class="form-control form-control-sm" placeholder="Кол-во" /></div>
-                                <div class="col-md-3"><InputNumber @bind-Value="ticket.Price" class="form-control form-control-sm" placeholder="Цена" /></div>
-                                <div class="col-md-1 text-end"><button type="button" class="btn btn-link text-danger p-0" @onclick="() => newExhibition.Tickets.Remove(ticket)"><i class="bi bi-trash fs-5"></i></button></div>
+                            <div class="row g-2 mb-2 p-2 rounded-3 mx-0 border" style="background-color: #fdfdfd; border-color: #c2c0bd !important;">
+                                <div class="col-md-5">
+                                    <InputText @bind-Value="ticketItem.Type" class="form-control form-control-sm border-0 bg-transparent fw-bold" placeholder="Тип билета" required />
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-transparent border-0 text-muted small">кол:</span>
+                                        <InputNumber @bind-Value="ticketItem.Quantity" class="form-control border-0 bg-transparent" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-transparent border-0 text-muted small">₽:</span>
+                                        <InputNumber @bind-Value="ticketItem.Price" class="form-control border-0 bg-transparent fw-bold" />
+                                    </div>
+                                </div>
+                                <div class="col-md-1 text-end">
+                                    <button type="button" class="btn btn-link text-dark opacity-50 p-0" 
+                                    @onclick="() => newExhibition.Tickets.Remove(ticketItem)">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </div>
                             </div>
                         }
 
-                        <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
-                            <h6 class="text-primary fw-bold mb-0">График работы</h6>
-                            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="AddSchedule">+ Добавить время</button>
+                        <div class="d-flex justify-content-between align-items-center mt-4 mb-3 pt-3 border-top">
+                            <h6 class="fw-bold mb-0 text-uppercase" style="color: #4b4b47; letter-spacing: 1px; font-size: 0.8rem;">График работы</h6>
+                            <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 fw-bold" style="font-size: 0.7rem;" 
+                            @onclick="AddSchedule">
+                                + ДОБАВИТЬ ВРЕМЯ
+                            </button>
                         </div>
-                        @foreach (var sch in newExhibition.Schedules)
+
+                        @foreach (var schItem in newExhibition.Schedules)
                         {
-                            <div class="card card-body bg-light border-0 mb-3 p-3 rounded-3 shadow-xs">
+                            <div class="card card-body border-0 mb-3 p-3 rounded-4 shadow-sm" 
+                            style="background-color: #f9f9f9; border: 1px solid #eee !important;">
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="small fw-bold">Период</label>
+                                        <label class="small fw-bold text-uppercase opacity-50 mb-1" 
+                                        style="font-size: 0.6rem; letter-spacing: 0.5px;">Период действия</label>
                                         <div class="input-group input-group-sm">
-                                            <input type="date" class="form-control" @onchange="@(e => sch.StartDate = DateOnly.Parse(e.Value.ToString()))" value="@sch.StartDate.ToString("yyyy-MM-dd")" />
-                                            <input type="date" class="form-control" @onchange="@(e => sch.EndDate = DateOnly.Parse(e.Value.ToString()))" value="@sch.EndDate.ToString("yyyy-MM-dd")" />
+                                            <input type="date" class="form-control border-dark-subtle" 
+                                            @onchange="@(e => schItem.StartDate = DateOnly.Parse(e.Value.ToString()))" value="@schItem.StartDate.ToString("yyyy-MM-dd")" />
+                                            <span class="input-group-text bg-white border-dark-subtle">—</span>
+                                            <input type="date" class="form-control border-dark-subtle" 
+                                            @onchange="@(e => schItem.EndDate = DateOnly.Parse(e.Value.ToString()))" value="@schItem.EndDate.ToString("yyyy-MM-dd")" />
                                         </div>
                                     </div>
                                     <div class="col-md-5">
-                                        <label class="small fw-bold">Время</label>
+                                        <label class="small fw-bold text-uppercase opacity-50 mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px;">Часы работы</label>
                                         <div class="input-group input-group-sm">
-                                            <input type="time" class="form-control" @onchange="@(e => sch.Open = TimeOnly.Parse(e.Value.ToString()))" value="@sch.Open.ToString("HH:mm")" />
-                                            <input type="time" class="form-control" @onchange="@(e => sch.Close = TimeOnly.Parse(e.Value.ToString()))" value="@sch.Close.ToString("HH:mm")" />
+                                            <input type="time" class="form-control border-dark-subtle" 
+                                            @onchange="@(e => schItem.Open = TimeOnly.Parse(e.Value.ToString()))" value="@schItem.Open.ToString("HH:mm")" />
+                                            <span class="input-group-text bg-white border-dark-subtle">до</span>
+                                            <input type="time" class="form-control border-dark-subtle" 
+                                            @onchange="@(e => schItem.Close = TimeOnly.Parse(e.Value.ToString()))" value="@schItem.Close.ToString("HH:mm")" />
                                         </div>
                                     </div>
-                                    <div class="col-md-1 text-end align-self-end"><button type="button" class="btn btn-link text-danger border-0" @onclick="() => newExhibition.Schedules.Remove(sch)"><i class="bi bi-x-circle-fill fs-5"></i></button></div>
+                                    <div class="col-md-1 text-end align-self-end">
+                                        <button type="button" class="btn btn-link text-danger border-0 p-0 mb-1" 
+                                        @onclick="() => newExhibition.Schedules.Remove(schItem)">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         }
                     </div>
 
-                    <div class="modal-footer border-0 bg-light p-4">
-                        <button type="button" class="btn btn-outline-secondary px-4 rounded-3" @onclick="CloseModal">Отмена</button>
-                        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-3 shadow">
-                            @(isEditMode ? "Сохранить изменения" : "Создать всё")
+                    <div class="modal-footer border-0 p-4" style="background-color: #f5f5f5;">
+                        <button type="button" class="btn btn-outline-dark px-4 rounded-pill fw-bold" 
+                        style="font-size: 0.75rem; letter-spacing: 1px;" @onclick="CloseModal">ОТМЕНА</button>
+                        <button type="submit" class="btn btn-dark px-5 py-2 fw-bold rounded-pill shadow-sm" 
+                        style="font-size: 0.75rem; letter-spacing: 1px;">
+                            @(isEditMode ? "СОХРАНИТЬ ИЗМЕНЕНИЯ" : "ОПУБЛИКОВАТЬ ВЫСТАВКУ")
                         </button>
                     </div>
                 </EditForm>
@@ -173,6 +296,7 @@
         </div>
     </div>
 }
+
 
 @code {
     private List<ExhibitionSalesDto> salesReports;
@@ -208,7 +332,14 @@
             isEditMode = true;
             currentId = id.Value;
             var selected = salesReports.FirstOrDefault(x => x.ExhibitionId == id.Value);
-            newExhibition = new CreateExhibitionAdminDto { Name = selected?.ExhibitionName, StartDate = DateTime.Today, EndDate = DateTime.Today.AddMonths(1), Tickets = new(), Schedules = new() };
+            newExhibition = new CreateExhibitionAdminDto 
+            { 
+                Name = selected?.ExhibitionName, 
+                StartDate = DateTime.Today, 
+                EndDate = DateTime.Today.AddMonths(1), 
+                Tickets = new(), 
+                Schedules = new() 
+            };
         }
         else
         {

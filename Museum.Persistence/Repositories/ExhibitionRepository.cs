@@ -21,8 +21,12 @@ namespace Museum.Persistence.Repositories
                     .ThenInclude(me => me.Museum)
                 .Include(e => e.Tickets)
                     .ThenInclude(t => t.TicketPrices)
+                .Include(e => e.Tickets)
+                    .ThenInclude(t => t.OrderItems)
+                        .ThenInclude(oi => oi.Order)
                 .ToListAsync();
         }
+
 
         public async Task<IEnumerable<Exhibition>> GetFilteredAsync(ExhibitionFilterDto filter)
         {

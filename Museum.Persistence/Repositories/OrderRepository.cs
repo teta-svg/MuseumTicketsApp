@@ -26,10 +26,7 @@ namespace Museum.Persistence.Repositories
             if (!int.TryParse(userIdStr, out int userId))
                 throw new ArgumentException("Invalid user ID");
 
-            var validTickets = createOrderDto.Tickets
-                .Where(t => t.Quantity > 0)
-                .ToList();
-
+            var validTickets = createOrderDto.Tickets.Where(t => t.Quantity > 0).ToList();
             if (!validTickets.Any())
                 throw new ArgumentException("Невозможно создать заказ без билетов");
 
@@ -52,8 +49,7 @@ namespace Museum.Persistence.Repositories
                 if (ticket.AvailableQuantity < t.Quantity)
                     throw new InvalidOperationException($"Недостаточно билетов для TicketID {t.TicketId}");
 
-                var price = ticket.TicketPrices.OrderBy(tp => tp.StartDate)
-                    .FirstOrDefault()?.Price ?? 0m;
+                var price = ticket.TicketPrices.OrderBy(tp => tp.StartDate).FirstOrDefault()?.Price ?? 0m;
 
                 order.OrderItems.Add(new OrderItem
                 {
@@ -62,11 +58,6 @@ namespace Museum.Persistence.Repositories
                     PriceAtPurchase = price
                 });
 
-                ticket.AvailableQuantity -= t.Quantity;
-                if (ticket.AvailableQuantity == 0)
-                {
-                    ticket.Status = "Продан";
-                }
             }
 
             _context.Orders.Add(order);
@@ -150,22 +141,48 @@ namespace Museum.Persistence.Repositories
         {
             var orders = await _context.Orders
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Ticket)
+                    .ThenInclude(oi => oi.Ticket)
                 .ToListAsync();
 
             return orders.Select(o => new OrderDto
             {
                 OrderId = o.OrderId,
-                CreatedAt = DateTime.Now,
-                Status = "Неизвестно",
+                CreatedAt = o.OrderDate,
+                Status = o.Status,
                 Tickets = o.OrderItems.Select(oi => new OrderTicketDto
                 {
                     TicketId = oi.TicketId,
                     TicketType = oi.Ticket != null ? oi.Ticket.Type : "Неизвестно",
                     Quantity = oi.Quantity,
-                    Price = 0
+                    Price = oi.PriceAtPurchase
                 }).ToList()
             }).ToList();
         }
+
+
+        public async Task ConfirmPaymentAndDeductTicketsAsync(int orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Ticket)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if (order == null) return;
+
+            foreach (var item in order.OrderItems)
+            {
+                if (item.Ticket.AvailableQuantity < item.Quantity)
+                    throw new InvalidOperationException($"Билеты для {item.Ticket.Type} закончились, пока вы оплачивали.");
+
+                item.Ticket.AvailableQuantity -= item.Quantity;
+
+                if (item.Ticket.AvailableQuantity == 0)
+                    item.Ticket.Status = "Продан";
+            }
+
+            order.Status = "Оплачен";
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
