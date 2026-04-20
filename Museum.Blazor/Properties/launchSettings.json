@@ -12,6 +12,7 @@
     "https": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "exhibitions",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

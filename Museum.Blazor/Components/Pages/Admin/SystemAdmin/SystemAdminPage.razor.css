@@ -1,0 +1,149 @@
+﻿.admin-container {
+    background-color: var(--bg-white);
+    min-height: 90vh;
+}
+
+.sidebar-btn {
+    text-align: left;
+    border: none !important;
+    border-radius: 10px !important;
+    margin-bottom: 8px;
+    padding: 12px 20px;
+    color: var(--accent-gray);
+    transition: 0.3s;
+}
+
+    .sidebar-btn.active {
+        background-color: var(--bg-dark) !important;
+        color: white !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+.content-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--light-gray);
+    min-height: 600px;
+}
+
+.table-museum thead {
+    background-color: var(--bg-dark);
+    color: white;
+}
+
+.btn-museum-dark {
+    background-color: var(--bg-dark);
+    color: white;
+    border-radius: 50px;
+    font-weight: 600;
+    padding: 8px 20px;
+}
+
+    .btn-museum-dark:hover {
+        background-color: var(--accent-gray);
+        color: white;
+    }
+
+.badge-paid {
+    background-color: var(--bg-dark);
+    color: white;
+    border-radius: 50px;
+    padding: 5px 12px;
+}
+
+.badge-wait {
+    background-color: var(--light-gray);
+    color: var(--bg-dark);
+    border-radius: 50px;
+    padding: 5px 12px;
+}
+
+.admin-header-row {
+    border-color: var(--light-gray) !important;
+}
+
+.admin-title {
+    letter-spacing: -1.5px;
+    color: var(--bg-dark);
+}
+
+.badge-root {
+    letter-spacing: 1px;
+    font-size: 0.7rem;
+}
+
+.stats-card-revenue {
+    background: var(--bg-dark);
+    color: white;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+}
+
+.stats-circle-decor {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%;
+}
+
+.stats-label {
+    letter-spacing: 3px;
+}
+
+.stats-value {
+    letter-spacing: -3px;
+}
+
+.stats-sync-indicator {
+    width: 8px;
+    height: 8px;
+    background: #28a745;
+    border-radius: 50%;
+    margin-right: 10px;
+    box-shadow: 0 0 10px #28a745;
+}
+
+.btn-excel-report {
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    border: 1px solid var(--accent-gray);
+}
+
+.table-cell-id, .table-header-id {
+    padding-left: 20px;
+}
+
+.table-cell-status, .table-header-status {
+    padding-right: 20px;
+}
+
+.table-row-bordered {
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.toast-container-custom {
+    z-index: 2000;
+    transition: all 0.3s ease;
+}
+
+.alert-dark {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

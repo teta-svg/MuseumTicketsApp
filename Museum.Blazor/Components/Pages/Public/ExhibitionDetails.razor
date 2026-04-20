@@ -11,7 +11,7 @@
     @if (details == null)
     {
         <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status"></div>
+            <div class="spinner-border spinner-museum" role="status"></div>
             <p class="mt-2 text-muted">Загрузка информации о выставке...</p>
         </div>
     }
@@ -19,12 +19,12 @@
     {
         <div class="row g-4">
             <div class="col-12 col-lg-8">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card museum-card shadow-sm overflow-hidden mb-4">
                     <div class="position-relative">
                         <img src="@(string.IsNullOrEmpty(details.Photo) ? "https://dummyimage.com/450X200/000/fff&text=%D0%A4%D0%BE%D1%82%D0%BE+%D0%B2%D1%8B%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D0%B8" : details.Photo)"
-                             class="img-fluid w-100" style="max-height: 450px; object-fit: cover;" />
+                             class="img-fluid w-100 museum-hero-img" />
                         <div class="position-absolute top-0 end-0 m-3">
-                            <span class="badge bg-white text-primary shadow-sm px-3 py-2 rounded-pill fw-bold">
+                            <span class="badge bg-white text-museum-primary shadow-sm px-3 py-2 rounded-pill fw-bold">
                                 @details.StatusMessage
                             </span>
                         </div>
@@ -93,7 +93,7 @@
             </div>
 
             <div class="col-12 col-lg-4">
-                <div class="card shadow-sm p-4 border-0 rounded-4 sticky-top" style="top: 2rem; z-index: 100;">
+                <div class="card shadow-sm p-4 border-0 rounded-4 sticky-top sticky-sidebar">
                     <h5 class="fw-bold mb-4">Приобрести билеты</h5>
                     
                     @if (details.Tickets == null || !details.Tickets.Any())
@@ -110,7 +110,7 @@
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
                                         <div class="fw-bold">@ticket.Type</div>
-                                        <div class="h5 fw-bold text-primary mb-0">@ticket.Price.ToString("N0") ₽</div>
+                                        <div class="h5 fw-bold text-museum-primary mb-0">@ticket.Price.ToString("N0") ₽</div>
                                     </div>
                                     @if (!canBuy)
                                     {
@@ -120,31 +120,28 @@
 
                                 @if (canBuy)
                                 {
-                                    <div class="d-flex justify-content-center align-items-center mt-3 bg-light rounded-pill p-2 border">
-                                        <button class="btn btn-link text-decoration-none fw-bold text-dark p-0"
-                                                style="width: 40px; font-size: 1.5rem;"
+                                    <div class="d-flex justify-content-center align-items-center mt-3 rounded-pill p-2 border quantity-container">
+                                        <button class="btn btn-link text-decoration-none fw-bold text-dark p-0 quantity-btn"
                                                 @onclick="() => ChangeQuantity(ticket.TicketID, -1)">
                                             −
                                         </button>
 
-                                        <span class="mx-4 fw-bold" style="min-width: 30px; text-align: center; font-size: 1.2rem;">
+                                        <span class="mx-4 fw-bold quantity-badge">
                                             @GetSelectedCount(ticket.TicketID)
                                         </span>
 
-                                        <button class="btn btn-link text-decoration-none fw-bold text-dark p-0"
-                                                style="width: 40px; font-size: 1.5rem;"
+                                        <button class="btn btn-link text-decoration-none fw-bold text-dark p-0 quantity-btn"
                                                 @onclick="() => ChangeQuantity(ticket.TicketID, 1)"
                                                 disabled="@(GetSelectedCount(ticket.TicketID) >= ticket.Quantity)">
                                             +
                                         </button>
                                     </div>
                                     <div class="text-center mt-1">
-                                        <small class="text-muted" style="font-size: 0.7rem;">В наличии: @ticket.Quantity</small>
+                                        <small class="text-muted text-stock">В наличии: @ticket.Quantity</small>
                                     </div>
                                 }
                             </div>
                         }
-
 
                         @if (GetTotalCount() > 0)
                         {
@@ -153,7 +150,7 @@
                                     <span>Итого:</span>
                                     <span>@GetTotalPrice().ToString("N0") ₽</span>
                                 </div>
-                                <button class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-lg" @onclick="PrepareOrder">
+                                <button class="btn btn-museum-buy w-100 py-3 rounded-pill fw-bold shadow-lg" @onclick="PrepareOrder">
                                     Оформить заказ (@GetTotalCount())
                                 </button>
                             </div>
@@ -167,9 +164,9 @@
 
 @if (showModal)
 {
-    <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.8); z-index: 1060;">
+    <div class="modal d-block museum-modal-backdrop" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-content museum-modal-content shadow">
                 <div class="modal-header border-0 p-4 pb-0">
                     <h5 class="fw-bold">Ваш заказ</h5>
                     <button type="button" class="btn-close" @onclick="CloseModal"></button>
@@ -189,12 +186,12 @@
                             }
                         </div>
                         
-                        <div class="d-flex justify-content-between h3 fw-bold text-primary mb-4">
+                        <div class="d-flex justify-content-between h3 fw-bold text-museum-total mb-4">
                             <span>К оплате:</span>
                             <span>@GetTotalPrice().ToString("N0") ₽</span>
                         </div>
 
-                        <button class="btn btn-primary w-100 py-3 rounded-3 fw-bold" @onclick="CreateOrder" disabled="@isProcessing">
+                        <button class="btn btn-museum-confirm w-100 py-3 rounded-3 fw-bold" @onclick="CreateOrder" disabled="@isProcessing">
                             @if (isProcessing)
                             {
                                 <span class="spinner-border spinner-border-sm me-2"></span>
@@ -208,7 +205,7 @@
                             <i class="bi bi-check-circle text-success display-1 mb-3"></i>
                             <h4 class="fw-bold">Заказ №@createdOrderId</h4>
                             <p class="text-muted mb-4">Заказ успешно сформирован. Пожалуйста, оплатите его, чтобы получить билеты.</p>
-                            <button class="btn btn-success w-100 py-3 rounded-3 fw-bold shadow" @onclick="PayOrder" disabled="@isProcessing">
+                            <button class="btn btn-success btn-museum-pay w-100 py-3 rounded-3 fw-bold" @onclick="PayOrder" disabled="@isProcessing">
                                 @if (isProcessing)
                                 {
                                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -229,99 +226,5 @@
 }
 
 @code {
-    [Parameter] public int id { get; set; }
-    private ExhibitionDetailsDTO? details;
-    private Dictionary<int, int> selectedQuantities = new();
     
-    private bool showModal = false;
-    private bool isProcessing = false;
-    private bool isOrderCreated = false;
-    private int createdOrderId;
-    private string errorMessage = "";
-
-    protected override async Task OnInitializedAsync() => await LoadData();
-
-    private async Task LoadData()
-    {
-        try { details = await Https.GetFromJsonAsync<ExhibitionDetailsDTO>($"api/Exhibitions/{id}"); }
-        catch { details = null; }
-    }
-
-    private void ChangeQuantity(int ticketId, int change)
-    {
-        var current = selectedQuantities.GetValueOrDefault(ticketId, 0);
-        var newVal = current + change;
-        if (newVal >= 0) selectedQuantities[ticketId] = newVal;
-    }
-
-    private int GetSelectedCount(int ticketId) => selectedQuantities.GetValueOrDefault(ticketId, 0);
-    private int GetTotalCount() => selectedQuantities.Values.Sum();
-    private decimal GetTotalPrice() => details?.Tickets.Sum(t => GetSelectedCount(t.TicketID) * t.Price) ?? 0;
-
-    private async Task PrepareOrder()
-    {
-        var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
-        if (string.IsNullOrEmpty(token))
-        {
-            Navigation.NavigateTo($"login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
-            return;
-        }
-        showModal = true;
-    }
-
-    private async Task CreateOrder()
-    {
-        isProcessing = true;
-        errorMessage = "";
-        try
-        {
-            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
-            Https.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-            var tickets = selectedQuantities.Where(x => x.Value > 0)
-                .Select(x => new OrderTicketRequestDto { TicketId = x.Key, Quantity = x.Value }).ToList();
-
-            var response = await Https.PostAsJsonAsync("api/orders", new CreateOrderDto { ExhibitionId = id, Tickets = tickets });
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<OrderDto>();
-                createdOrderId = result.OrderId;
-                isOrderCreated = true;
-            }
-            else { errorMessage = "Не удалось создать заказ. Попробуйте обновить страницу."; }
-        }
-        catch (Exception ex) { errorMessage = "Ошибка: " + ex.Message; }
-        finally { isProcessing = false; }
-    }
-
-    private async Task PayOrder()
-    {
-        isProcessing = true;
-        try
-        {
-            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
-            Https.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            
-            var response = await Https.PostAsJsonAsync($"api/payments/{createdOrderId}", GetTotalPrice());
-            if (response.IsSuccessStatusCode) Navigation.NavigateTo("/orders");
-            else errorMessage = "Оплата отклонена платежной системой.";
-        }
-        catch (Exception ex) { errorMessage = "Ошибка связи: " + ex.Message; }
-        finally { isProcessing = false; }
-    }
-
-    private void CloseModal() { showModal = false; isOrderCreated = false; errorMessage = ""; }
-
-    private string GetDayName(int day) => day switch
-    {
-        1 => "Понедельник",
-        2 => "Вторник",
-        3 => "Среда",
-        4 => "Четверг",
-        5 => "Пятница",
-        6 => "Суббота",
-        7 => "Воскресенье",
-        _ => "Неизвестно"
-    };
 }

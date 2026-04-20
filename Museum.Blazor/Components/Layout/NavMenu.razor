@@ -3,40 +3,41 @@
 @inject IJSRuntime JS
 @inject NavigationManager Nav
 
-<nav class="custom-navbar" style="background-color: #000; padding: 15px 0; border-bottom: 1px solid #212126;">
-    <div class="container-fluid" style="display: flex; align-items: center; padding: 0 50px;">
+<nav class="custom-navbar">
+    <div class="container-fluid navbar-container">
         
-        <a class="navbar-brand-custom" href="/" style="color: #fff; font-weight: 900; letter-spacing: 3px; text-decoration: none; font-size: 1.3rem; margin-right: auto;">MUSEUM</a>
+        <a class="navbar-brand-custom" href="/">MUSEUM</a>
 
-        <div style="display: flex; align-items: center; gap: 30px;">
-            <NavLink class="nav-link-custom" style="color: #c2c0bd; text-decoration: none; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;" href="/exhibitions">ВЫСТАВКИ</NavLink>
+        <div class="nav-links-group">
+            <NavLink class="nav-link-custom" href="/exhibitions">ВЫСТАВКИ</NavLink>
     
             @if (isLoggedIn)
             {
-                <NavLink class="nav-link-custom" style="color: #c2c0bd; text-decoration: none; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;" href="/orders">МОИ ЗАКАЗЫ</NavLink>
+                <NavLink class="nav-link-custom" href="/orders">МОИ ЗАКАЗЫ</NavLink>
 
                 @if (isSystemAdmin)
                 {
-                    <NavLink class="nav-link-custom" style="color: #c2c0bd; text-decoration: none; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;" href="/admin/system">СИСТЕМА</NavLink>
+                    <NavLink class="nav-link-custom" href="/admin/system">СИСТЕМА</NavLink>
                 }
                 @if (isMuseumAdmin)
                 {
-                    <NavLink class="nav-link-custom" style="color: #c2c0bd; text-decoration: none; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;" href="/admin/museum">АДМИНКА МУЗЕЯ</NavLink>
+                    <NavLink class="nav-link-custom" href="/admin/museum">АДМИНКА МУЗЕЯ</NavLink>
                 }
 
-                <span style="color: #4b4b47; font-size: 0.75rem; margin-left: 10px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="@userEmail">
+                <span class="user-email-display" title="@userEmail">
                     @userEmail
                 </span>
 
-                <a class="btn-logout" style="cursor:pointer; background: #fff; color: #000; padding: 6px 20px; border-radius: 20px; font-weight: 800; font-size: 0.75rem; text-decoration: none; margin-left: 10px;" @onclick="Logout">ВЫЙТИ</a>
+                <button class="btn-auth" @onclick="Logout">ВЫЙТИ</button>
             }
             else
             {
-                <NavLink class="btn-logout" style="background: #fff; color: #000; padding: 6px 20px; border-radius: 20px; font-weight: 800; font-size: 0.75rem; text-decoration: none;" href="/login">ВОЙТИ</NavLink>
+                <NavLink class="btn-auth" href="/login">ВОЙТИ</NavLink>
             }
         </div>
     </div>
 </nav>
+
 
 
 

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.JSInterop;
 using Museum.Application.Interfaces;
 using Museum.Application.Services;
 using Museum.Blazor.Components;
@@ -34,8 +33,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Program.cs в проекте API
 builder.Services.AddControllers();
+builder.Services.AddOpenApi();
 
 
 // Database

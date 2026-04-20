@@ -1,0 +1,79 @@
+﻿.spinner-museum {
+    color: var(--bg-dark) !important;
+}
+
+.text-museum-primary {
+    color: var(--bg-dark) !important;
+}
+
+.museum-hero-img {
+    max-height: 450px;
+    object-fit: cover;
+}
+
+.museum-card {
+    border: none;
+    border-radius: 1rem;
+}
+
+.quantity-badge {
+    min-width: 30px;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.quantity-btn {
+    width: 40px;
+    font-size: 1.5rem;
+}
+
+.quantity-container {
+    background-color: var(--bg-white);
+}
+
+.text-stock {
+    font-size: 0.7rem;
+}
+
+.sticky-sidebar {
+    top: 2rem;
+    z-index: 100;
+}
+
+.btn-museum-buy {
+    background-color: var(--bg-dark) !important;
+    border-color: var(--bg-dark) !important;
+    color: var(--bg-white) !important;
+}
+
+    .btn-museum-buy:hover {
+        background-color: var(--bg-deep) !important;
+    }
+
+.museum-modal-backdrop {
+    background: rgba(0,0,0,0.8);
+    z-index: 1060;
+}
+
+.museum-modal-content {
+    border: 0 !important;
+    border-radius: 1rem !important;
+}
+
+.btn-museum-confirm {
+    background-color: var(--bg-dark) !important;
+    border-color: var(--bg-dark) !important;
+    color: var(--bg-white) !important;
+}
+
+    .btn-museum-confirm:hover {
+        background-color: var(--bg-deep) !important;
+    }
+
+.text-museum-total {
+    color: var(--bg-dark) !important;
+}
+
+.btn-museum-pay {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}

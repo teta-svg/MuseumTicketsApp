@@ -471,7 +471,4 @@ public class AdminService : IAdminService
         workbook.SaveAs(stream);
         return (stream.ToArray(), "Exhibitions_Export.xlsx");
     }
-
-
-
 }

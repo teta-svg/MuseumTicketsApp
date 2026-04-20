@@ -1,0 +1,107 @@
+﻿.orders-container {
+    min-height: 100vh;
+    background-color: var(--bg-white);
+    padding-bottom: 50px;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: var(--bg-dark);
+    text-transform: uppercase;
+}
+
+.order-card {
+    background: #fff;
+    border: 1px solid var(--border-soft) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .order-card:hover {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;
+    }
+
+.order-header {
+    border-bottom: 1px solid var(--border-soft) !important;
+    padding: 1.5rem !important;
+}
+
+.order-number {
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.museum-badge {
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 6px 15px;
+    border-radius: 50px;
+}
+
+.status-paid {
+    background-color: var(--bg-dark);
+    color: #fff;
+}
+
+.status-pending {
+    background-color: var(--light-gray);
+    color: var(--bg-dark);
+}
+
+.status-canceled {
+    background-color: #eee;
+    color: #999;
+}
+
+.order-total-price {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--bg-dark);
+}
+
+.order-items-box {
+    background-color: #fcfcfc;
+    border: 1px solid var(--border-soft);
+    padding: 1.5rem;
+}
+
+.item-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--light-gray);
+    letter-spacing: 2px;
+}
+
+.btn-museum-outline {
+    border: 2px solid var(--bg-dark);
+    background: transparent;
+    color: var(--bg-dark);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    transition: 0.2s;
+}
+
+    .btn-museum-outline:hover {
+        background: var(--bg-dark);
+        color: #fff;
+    }
+
+.btn-museum-pay {
+    background: var(--bg-dark);
+    color: #fff;
+    border: none;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border-radius: 50px;
+}
+
+.empty-orders-card {
+    border: 2px dashed var(--light-gray) !important;
+    padding: 5rem !important;
+}
