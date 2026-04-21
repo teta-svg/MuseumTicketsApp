@@ -1,5 +1,5 @@
 ﻿using Microsoft.JSInterop;
-using Museum.Application.DTOs;
+using Museum.Domain.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace Museum.Blazor.Components.Pages

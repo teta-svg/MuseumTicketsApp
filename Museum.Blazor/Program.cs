@@ -1,19 +1,21 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Museum.Application.Interfaces;
-using Museum.Application.Interfaces.Repositories;
 using Museum.Application.Services;
 using Museum.Blazor.Components;
-using Museum.Persistence;
-using Museum.Persistence.Repositories;
+using Museum.Domain.Interfaces.Repositories;
+using Museum.Domain.Interfaces.Services;
+using Museum.Domain.Persistence;
+using Museum.Domain.Persistence.Repositories;
+using Museum.Domain.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var key = Encoding.UTF8.GetBytes("MySuperSecretKeyForMuseumTicketsApp2026!");
 
-builder.Services.AddAuthentication(options =>
+builder
+    .Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -53,7 +55,10 @@ builder.Services.AddScoped<IMuseumRepository, MuseumRepository>();
 
 // Services
 builder.Services.AddScoped<IExhibitionService, ExhibitionService>();
-builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IExhibitionAdminService, ExhibitionAdminService>();
+builder.Services.AddScoped<IUserAdminService, UserAdminService>();
+builder.Services.AddScoped<ITicketAdminService, TicketAdminService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IOrderService, OrderService>();

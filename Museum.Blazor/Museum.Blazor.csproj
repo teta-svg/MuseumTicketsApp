@@ -18,9 +18,8 @@
 		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.1.4" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Museum.Application\Museum.Application.csproj" />
-    <ProjectReference Include="..\Museum.Persistence\Museum.Persistence.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Museum.Domain\Museum.Domain.csproj" />
+	</ItemGroup>
 
 </Project>

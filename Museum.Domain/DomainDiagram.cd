@@ -1,95 +1,167 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Museum.Domain.Exhibition">
-    <Position X="3.25" Y="3.25" Width="1.75" />
+  <Class Name="Museum.Domain.Entities.Exhibition">
+    <Position X="0.75" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAAAAACAAAAAAAAQAAAAAEAQAAAAAAAAAAAA=</HashCode>
-      <FileName>Exhibition.cs</FileName>
+      <HashCode>AAQAAAAAAAAAACAAAAAAAAQAAAAAEAQAAAAAAQAAAAA=</HashCode>
+      <FileName>Entities\Exhibition.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.Museum">
-    <Position X="10" Y="3.75" Width="2" />
+  <Class Name="Museum.Domain.Entities.Museum">
+    <Position X="6.5" Y="3" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAIAAAAAAQAgAAAEAAEEAICAAAAAAA=</HashCode>
-      <FileName>Museum.cs</FileName>
+      <FileName>Entities\Museum.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.MuseumComplex">
-    <Position X="0.75" Y="4" Width="1.75" />
+  <Class Name="Museum.Domain.Entities.MuseumComplex">
+    <Position X="10.5" Y="2.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAACAAAQAAAAAAAAAAAACAAAAAAA=</HashCode>
-      <FileName>MuseumComplex.cs</FileName>
+      <FileName>Entities\MuseumComplex.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.MuseumExhibition">
-    <Position X="12.25" Y="4" Width="1.75" />
+  <Class Name="Museum.Domain.Entities.MuseumExhibition">
+    <Position X="6.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAACAAAAAAAAAAAggABAAAQAAAQAAEAAAAA=</HashCode>
-      <FileName>MuseumExhibition.cs</FileName>
+      <FileName>Entities\MuseumExhibition.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.MuseumSchedule">
-    <Position X="5.25" Y="3.5" Width="2" />
+  <Class Name="Museum.Domain.Entities.MuseumSchedule">
+    <Position X="8.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAABAAAAgAAAAAwgABAAAAAAAAAIEBAAAA=</HashCode>
-      <FileName>MuseumSchedule.cs</FileName>
+      <FileName>Entities\MuseumSchedule.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.Order">
-    <Position X="3.25" Y="5.5" Width="1.5" />
+  <Class Name="Museum.Domain.Entities.Order">
+    <Position X="3" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>GAABAAAEAAFAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Order.cs</FileName>
+      <FileName>Entities\Order.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.OrderItem">
-    <Position X="7" Y="1" Width="1.5" />
+  <Class Name="Museum.Domain.Entities.OrderItem">
+    <Position X="4.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAEAAAAAAAAAAAACAAAAAAAAAAQAABAAAAAAgAAAIAA=</HashCode>
-      <FileName>OrderItem.cs</FileName>
+      <FileName>Entities\OrderItem.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.Payment">
-    <Position X="3.25" Y="1" Width="1.5" />
+  <Class Name="Museum.Domain.Entities.Payment">
+    <Position X="4.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAEAAAAAAAEAAAAAAAAAAACAAgAAABAAAAAAAAAAAAA=</HashCode>
-      <FileName>Payment.cs</FileName>
+      <FileName>Entities\Payment.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.ScheduleDay">
-    <Position X="5" Y="1" Width="1.5" />
+  <Class Name="Museum.Domain.Entities.ScheduleDay">
+    <Position X="10.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAQAAAAAAAABAAAAAAAAgAAAAAAAAAEAAAAAAAAAAA=</HashCode>
-      <FileName>ScheduleDay.cs</FileName>
+      <FileName>Entities\ScheduleDay.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.ScheduleException">
-    <Position X="9" Y="1" Width="2" />
+  <Class Name="Museum.Domain.Entities.ScheduleException">
+    <Position X="10.5" Y="4" Width="1.75" />
     <TypeIdentifier>
       <HashCode>IAAAAAAAAAAAJAAAAgAAAAAAAAAAAAAEAAAAIAAAABA=</HashCode>
-      <FileName>ScheduleException.cs</FileName>
+      <FileName>Entities\ScheduleException.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.Ticket">
-    <Position X="7.75" Y="3.75" Width="1.75" />
+  <Class Name="Museum.Domain.Entities.Ticket">
+    <Position X="8.5" Y="3.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAEAAkCAAAAAAAAgAAAAAAAABQAAQAAAAAAAAA=</HashCode>
-      <FileName>Ticket.cs</FileName>
+      <FileName>Entities\Ticket.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.TicketPrice">
-    <Position X="11.5" Y="1" Width="1.5" />
+  <Class Name="Museum.Domain.Entities.TicketPrice">
+    <Position X="12.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAQAAAAACAAAAAAAgAAAAABAgAAAAAEAAAAA=</HashCode>
-      <FileName>TicketPrice.cs</FileName>
+      <FileName>Entities\TicketPrice.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Museum.Domain.User">
-    <Position X="1.25" Y="1" Width="1.5" />
+  <Class Name="Museum.Domain.Entities.User">
+    <Position X="12.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEAAEAAACAAAAAAEAAQAAgAAAAAAAACAAAAIAAAAAg=</HashCode>
-      <FileName>User.cs</FileName>
+      <FileName>Entities\User.cs</FileName>
     </TypeIdentifier>
+  </Class>
+  <Class Name="AuthService" BaseTypeListCollapsed="true">
+    <Position X="6.5" Y="6" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AgQAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAEAAAAAGAA=</HashCode>
+      <FileName>Services\AuthService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="FakePaymentService" BaseTypeListCollapsed="true">
+    <Position X="8.5" Y="6" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAgAAAAAAAAAAAAAAEAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>Services\FakePaymentService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Museum.Application.Services.ExhibitionService" BaseTypeListCollapsed="true">
+    <Position X="4.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEABAAAAABAAAAAAAAAAAAAAAAAAAAABAAAAAAAIAA=</HashCode>
+      <FileName>Services\ExhibitionService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Museum.Application.Services.OrderService" BaseTypeListCollapsed="true">
+    <Position X="0.75" Y="4.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAAgAAAAACAAAAAAAAAAAAAADAAAAA=</HashCode>
+      <FileName>Services\OrderService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Museum.Application.Services.PasswordHasher" BaseTypeListCollapsed="true">
+    <Position X="3" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAACAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\PasswordHasher.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Museum.Domain.Services.ExhibitionAdminService" BaseTypeListCollapsed="true">
+    <Position X="14.75" Y="5.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAAAAQAAAAAAAAAAAAAQECAAAAAAAAA=</HashCode>
+      <FileName>Services\ExhibitionAdminService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Museum.Domain.Services.UserAdminService" BaseTypeListCollapsed="true">
+    <Position X="10.5" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAQAEAA=</HashCode>
+      <FileName>Services\UserAdminService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Museum.Domain.Services.TicketAdminService" BaseTypeListCollapsed="true">
+    <Position X="0.75" Y="2.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Services\TicketAdminService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Museum.Domain.Services.ReportService" BaseTypeListCollapsed="true">
+    <Position X="12.5" Y="5.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AQIAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAgAAAAAEEQ=</HashCode>
+      <FileName>Services\ReportService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

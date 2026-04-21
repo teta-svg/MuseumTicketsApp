@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
-using Museum.Application.DTOs;
+using Museum.Domain.DTOs;
 
 namespace Museum.Blazor.Components.Pages
 {

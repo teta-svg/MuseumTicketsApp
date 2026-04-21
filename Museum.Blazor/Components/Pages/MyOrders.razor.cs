@@ -1,5 +1,5 @@
 ﻿using Microsoft.JSInterop;
-using Museum.Application.DTOs;
+using Museum.Domain.DTOs;
 
 namespace Museum.Blazor.Components.Pages
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Museum.Application.DTOs;
-using Museum.Application.Interfaces;
+using Museum.Domain.DTOs;
+using Museum.Domain.Interfaces.Services;
 using System.Security.Claims;
 
 namespace Museum.WebAPI.Controllers
