@@ -1,4 +1,5 @@
 ﻿using Museum.Application.Interfaces;
+using Museum.Application.Interfaces.Repositories;
 using Museum.Domain;
 
 public class FakePaymentService : IPaymentService

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Museum.Application.DTOs;
-using Museum.Application.Interfaces;
+using Museum.Application.Interfaces.Repositories;
 using Museum.Domain;
 
 namespace Museum.Persistence.Repositories
@@ -183,6 +183,5 @@ namespace Museum.Persistence.Repositories
             order.Status = "Оплачен";
             await _context.SaveChangesAsync();
         }
-
     }
 }

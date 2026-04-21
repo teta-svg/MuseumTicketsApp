@@ -1,31 +1,32 @@
 ﻿using ClosedXML.Excel;
 using Museum.Application.DTOs;
 using Museum.Application.Interfaces;
+using Museum.Application.Interfaces.Repositories;
 using Museum.Domain;
 
 public class AdminService : IAdminService
 {
     private readonly IExhibitionRepository _exhibitionRepo;
     private readonly ITicketRepository _ticketRepo;
-    private readonly IScheduleRepository _scheduleRepo;
     private readonly IUserRepository _userRepo;
     private readonly IOrderRepository _orderRepo;
     private readonly IMuseumRepository _museumRepo;
+    private readonly IPasswordHasher _passwordHasher;
 
     public AdminService(
         IExhibitionRepository exhibitionRepo,
         ITicketRepository ticketRepo,
-        IScheduleRepository scheduleRepo,
         IUserRepository userRepo,
         IOrderRepository orderRepo,
-        IMuseumRepository museumRepo)
+        IMuseumRepository museumRepo,
+        IPasswordHasher passwordHasher)
     {
         _exhibitionRepo = exhibitionRepo;
         _ticketRepo = ticketRepo;
-        _scheduleRepo = scheduleRepo;
         _userRepo = userRepo;
         _orderRepo = orderRepo;
         _museumRepo = museumRepo;
+        _passwordHasher = passwordHasher;
     }
 
     private async Task<Museum.Domain.Museum> GetOrCreateMuseumAsync(CreateExhibitionAdminDto dto)
@@ -41,27 +42,26 @@ public class AdminService : IAdminService
 
         var museum = await _museumRepo.GetByAddressAsync(dto.MuseumName, dto.City, dto.Street, dto.House);
 
-        if (museum != null)
+        if (museum == null)
+        {
+            museum = new Museum.Domain.Museum
+            {
+                Name = dto.MuseumName,
+                City = dto.City,
+                Street = dto.Street,
+                House = dto.House,
+                MuseumComplexId = complex.MuseumComplexId
+            };
+            await _museumRepo.AddAsync(museum);
+            await _museumRepo.SaveChangesAsync();
+        }
+        else
         {
             museum.MuseumComplexId = complex.MuseumComplexId;
-            return museum;
         }
-
-        museum = new Museum.Domain.Museum
-        {
-            Name = dto.MuseumName,
-            City = dto.City,
-            Street = dto.Street,
-            House = dto.House,
-            MuseumComplexId = complex.MuseumComplexId
-        };
-
-        await _museumRepo.AddAsync(museum);
-        await _museumRepo.SaveChangesAsync();
 
         return museum;
     }
-
 
     public async Task<int> CreateExhibitionAsync(CreateExhibitionAdminDto dto)
     {
@@ -70,133 +70,36 @@ public class AdminService : IAdminService
         var exhibition = new Exhibition
         {
             Name = dto.Name,
-            Photo = dto.Photo
+            IsDeleted = false,
+            MuseumExhibitions = new List<MuseumExhibition>()
         };
-
-        await _exhibitionRepo.AddAsync(exhibition);
-        await _exhibitionRepo.SaveChangesAsync();
-
-        if (exhibition.MuseumExhibitions == null) exhibition.MuseumExhibitions = new List<MuseumExhibition>();
 
         exhibition.MuseumExhibitions.Add(new MuseumExhibition
         {
             MuseumId = museum.MuseumId,
-            ExhibitionId = exhibition.ExhibitionId,
             StartDate = DateOnly.FromDateTime(dto.StartDate),
             EndDate = DateOnly.FromDateTime(dto.EndDate)
         });
 
-        foreach (var t in dto.Tickets)
-        {
-            var ticket = new Ticket
-            {
-                ExhibitionId = exhibition.ExhibitionId,
-                Type = t.Type,
-                AvailableQuantity = t.Quantity,
-                Status = "Доступен"
-            };
-
-            ticket.TicketPrices = new List<TicketPrice>
-        {
-            new TicketPrice
-            {
-                Price = t.Price,
-                StartDate = DateOnly.FromDateTime(DateTime.Now),
-                EndDate = DateOnly.MaxValue
-            }
-        };
-
-            await _ticketRepo.AddAsync(ticket);
-        }
-
-        foreach (var s in dto.Schedules)
-        {
-            await _scheduleRepo.AddAsync(new MuseumSchedule
-            {
-                MuseumId = museum.MuseumId,
-                StartDate = s.StartDate,
-                EndDate = s.EndDate,
-                OpenTime = s.Open,
-                CloseTime = s.Close
-            });
-        }
-
-        await _exhibitionRepo.SaveChangesAsync();
-        await _ticketRepo.SaveChangesAsync();
-        await _scheduleRepo.SaveChangesAsync();
-
-        return exhibition.ExhibitionId;
-    }
-
-
-    public async Task UpdateExhibitionAsync(int id, CreateExhibitionAdminDto dto)
-    {
-        var exhibition = await _exhibitionRepo.GetByIdAsync(id)
-            ?? throw new Exception("Выставка не найдена");
-        exhibition.Name = dto.Name;
-        exhibition.Photo = dto.Photo;
-
-        var museum = await GetOrCreateMuseumAsync(dto);
-
-        var relation = exhibition.MuseumExhibitions.FirstOrDefault();
-        if (relation == null)
-        {
-            exhibition.MuseumExhibitions.Add(new MuseumExhibition
-            {
-                MuseumId = museum.MuseumId,
-                StartDate = DateOnly.FromDateTime(dto.StartDate),
-                EndDate = DateOnly.FromDateTime(dto.EndDate)
-            });
-        }
-        else
-        {
-            relation.MuseumId = museum.MuseumId;
-            relation.StartDate = DateOnly.FromDateTime(dto.StartDate);
-            relation.EndDate = DateOnly.FromDateTime(dto.EndDate);
-        }
-
-        var oldTickets = await _ticketRepo.GetTicketsByExhibitionAsync(id);
-        foreach (var ot in oldTickets)
-        {
-            await _ticketRepo.DeleteAsync(ot);
-        }
+        await _exhibitionRepo.AddAsync(exhibition);
 
         foreach (var t in dto.Tickets)
         {
             var ticket = new Ticket
             {
-                ExhibitionId = id,
                 Type = t.Type,
                 AvailableQuantity = t.Quantity,
                 Status = "Доступен",
                 TicketPrices = new List<TicketPrice>
-            {
-                new TicketPrice { Price = t.Price, StartDate = DateOnly.FromDateTime(DateTime.Now), EndDate = DateOnly.MaxValue }
-            }
+                {
+                    new TicketPrice { Price = t.Price, StartDate = DateOnly.FromDateTime(DateTime.Now), EndDate = DateOnly.MaxValue }
+                }
             };
-            await _ticketRepo.AddAsync(ticket);
+            exhibition.Tickets.Add(ticket);
         }
 
-        var oldSchedules = await _scheduleRepo.GetByMuseumIdAsync(museum.MuseumId);
-        foreach (var os in oldSchedules)
-        {
-            await _scheduleRepo.DeleteAsync(os);
-        }
-
-        foreach (var s in dto.Schedules)
-        {
-            await _scheduleRepo.AddAsync(new MuseumSchedule
-            {
-                MuseumId = museum.MuseumId,
-                StartDate = s.StartDate,
-                EndDate = s.EndDate,
-                OpenTime = s.Open,
-                CloseTime = s.Close
-            });
-        }
         await _exhibitionRepo.SaveChangesAsync();
-        await _ticketRepo.SaveChangesAsync();
-        await _scheduleRepo.SaveChangesAsync();
+        return exhibition.ExhibitionId;
     }
 
     public async Task DeleteExhibitionAsync(int id)
@@ -204,94 +107,35 @@ public class AdminService : IAdminService
         var exhibition = await _exhibitionRepo.GetByIdAsync(id);
         if (exhibition == null) return;
 
-        await _exhibitionRepo.DeleteAsync(exhibition);
+        exhibition.IsDeleted = true;
         await _exhibitionRepo.SaveChangesAsync();
     }
-
-    public async Task AddTicketAsync(CreateTicketAdminDto dto)
-    {
-        var tickets = await _ticketRepo.GetTicketsByExhibitionAsync(dto.ExhibitionId);
-
-        if (tickets.Any(t => t.Type == dto.Type))
-            throw new Exception("Такой тип билета уже существует");
-
-        var ticket = new Ticket
-        {
-            ExhibitionId = dto.ExhibitionId,
-            Type = dto.Type,
-            AvailableQuantity = dto.Quantity,
-            Status = "Доступен"
-        };
-
-        ticket.TicketPrices.Add(new TicketPrice
-        {
-            Price = dto.Price,
-            StartDate = DateOnly.FromDateTime(DateTime.Now),
-            EndDate = DateOnly.MaxValue
-        });
-
-        await _ticketRepo.AddAsync(ticket);
-        await _ticketRepo.SaveChangesAsync();
-    }
-
-    public async Task UpdateTicketAsync(int ticketId, UpdateTicketAdminDto dto)
-    {
-        var ticket = await _ticketRepo.GetByIdAsync(ticketId)
-            ?? throw new Exception("Билет не найден");
-
-        ticket.AvailableQuantity = dto.Quantity;
-
-        ticket.TicketPrices.Add(new TicketPrice
-        {
-            Price = dto.Price,
-            StartDate = DateOnly.FromDateTime(DateTime.Now),
-            EndDate = DateOnly.MaxValue
-        });
-
-        await _ticketRepo.SaveChangesAsync();
-    }
-
-    public async Task AddScheduleAsync(CreateScheduleAdminDto dto)
-    {
-        var schedule = new MuseumSchedule
-        {
-            MuseumId = dto.MuseumId,
-            StartDate = dto.StartDate,
-            EndDate = dto.EndDate,
-            OpenTime = dto.Open,
-            CloseTime = dto.Close
-        };
-
-        await _scheduleRepo.AddAsync(schedule);
-        await _scheduleRepo.SaveChangesAsync();
-    }
-
 
     public async Task CreateUserAsync(string email, string password, string firstName, string lastName, string? middleName, string? phone, string role)
     {
         if (await _userRepo.GetByEmailAsync(email) != null)
             throw new Exception("Пользователь уже существует");
 
-        var user = new User
+        var hashedPassword = _passwordHasher.HashPassword(password);
+
+        await _userRepo.AddAsync(new User
         {
             Email = email,
-            Password = password,
+            Password = hashedPassword,
             FirstName = firstName,
             LastName = lastName,
             MiddleName = middleName,
             Phone = phone,
             Role = role
-        };
+        });
 
-        await _userRepo.AddAsync(user);
         await _userRepo.SaveChangesAsync();
     }
 
     public async Task DeleteUserAsync(string email)
     {
         var user = await _userRepo.GetByEmailAsync(email);
-        if (user == null)
-            throw new Exception("Пользователь не найден");
+        if (user == null) throw new Exception("Пользователь не найден");
 
         _userRepo.Delete(user);
         await _userRepo.SaveChangesAsync();
@@ -300,44 +144,10 @@ public class AdminService : IAdminService
     public async Task CloseTicketSalesAsync(int exhibitionId)
     {
         var tickets = await _ticketRepo.GetTicketsByExhibitionAsync(exhibitionId);
-
-        foreach (var ticket in tickets)
-            ticket.Status = "Отменён";
+        foreach (var ticket in tickets) ticket.Status = "Отменён";
 
         await _ticketRepo.SaveChangesAsync();
     }
-
-    public async Task<List<OrderDto>> GetAllOrdersAsync()
-    {
-        return await _orderRepo.GetAllAsync();
-    }
-
-
-    public async Task UpdateOrderStatusAsync(int orderId, string status)
-    {
-        if (status != "Продан" && status != "Отменён" && status != "Доступен")
-            throw new Exception("Недопустимый статус");
-
-        await _orderRepo.UpdateOrderStatusAsync(orderId, status);
-    }
-
-    public async Task<IEnumerable<ExhibitionSalesDto>> GetExhibitionSalesAsync()
-    {
-        var exhibitions = await _exhibitionRepo.GetAllAsync();
-
-        return exhibitions.Select(e => new ExhibitionSalesDto
-        {
-            ExhibitionId = e.ExhibitionId,
-            ExhibitionName = e.Name,
-
-            TicketsSold = e.Tickets
-                .SelectMany(t => t.OrderItems ?? new List<OrderItem>())
-                .Where(oi => oi.Order != null && oi.Order.Status == "Оплачен")
-                .Sum(oi => oi.Quantity)
-        }).ToList();
-    }
-
-
 
     //эксель
     public async Task<(byte[] FileContent, string FileName)> GetStatisticsAsync()
@@ -347,11 +157,15 @@ public class AdminService : IAdminService
         var tickets = await _ticketRepo.GetAllAsync();
         var exhibitions = await _exhibitionRepo.GetAllAsync();
 
+        var activeExhibitions = exhibitions.Where(e => !e.IsDeleted).ToList();
+
+        int totalPhysicalTickets = tickets
+            .Where(t => t.Exhibition != null && !t.Exhibition.IsDeleted)
+            .Sum(t => t.AvailableQuantity);
+
         var paidOrders = allOrders.Where(o => o.Status == "Оплачен").ToList();
 
         decimal revenue = paidOrders.Sum(o => o.Tickets.Sum(t => t.Price * t.Quantity));
-
-        int totalPhysicalTickets = tickets.Sum(t => t.AvailableQuantity);
 
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Статистика");
@@ -361,8 +175,8 @@ public class AdminService : IAdminService
         ws.Range("A1:B1").Style.Font.Bold = true;
         ws.Range("A1:B1").Style.Fill.BackgroundColor = XLColor.LightGray;
 
-        ws.Cell(2, 1).Value = "Всего выставок в системе";
-        ws.Cell(2, 2).Value = exhibitions.Count();
+        ws.Cell(2, 1).Value = "Всего активных выставок";
+        ws.Cell(2, 2).Value = activeExhibitions.Count;
 
         ws.Cell(3, 1).Value = "Общее кол-во билетов (остаток)";
         ws.Cell(3, 2).Value = totalPhysicalTickets;
@@ -428,15 +242,14 @@ public class AdminService : IAdminService
         worksheet.Cell(1, 4).Value = "Город";
         worksheet.Cell(1, 5).Value = "Улица";
         worksheet.Cell(1, 6).Value = "Дом";
-        worksheet.Cell(1, 7).Value = "Дата начала";
-        worksheet.Cell(1, 8).Value = "Дата окончания";
 
         worksheet.Range(1, 1, 1, 8).Style.Font.SetBold();
 
         var exhibitions = await _exhibitionRepo.GetAllAsync();
+        var activeExhibitions = exhibitions.Where(ex => !ex.IsDeleted).ToList();
         int row = 2;
 
-        foreach (var ex in exhibitions)
+        foreach (var ex in activeExhibitions)
         {
             if (ex.MuseumExhibitions != null && ex.MuseumExhibitions.Any())
             {
@@ -449,11 +262,6 @@ public class AdminService : IAdminService
                     worksheet.Cell(row, 5).Value = me.Museum?.Street;
                     worksheet.Cell(row, 6).Value = me.Museum?.House;
 
-                    worksheet.Cell(row, 7).Value = me.StartDate.ToDateTime(TimeOnly.MinValue);
-                    worksheet.Cell(row, 8).Value = me.EndDate.ToDateTime(TimeOnly.MinValue);
-
-                    worksheet.Cell(row, 7).Style.DateFormat.Format = "dd.mm.yyyy";
-                    worksheet.Cell(row, 8).Style.DateFormat.Format = "dd.mm.yyyy";
                     row++;
                 }
             }
@@ -470,5 +278,21 @@ public class AdminService : IAdminService
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
         return (stream.ToArray(), "Exhibitions_Export.xlsx");
+    }
+
+    public async Task<IEnumerable<ExhibitionSalesDto>> GetExhibitionSalesAsync()
+    {
+        var exhibitions = await _exhibitionRepo.GetAllAsync();
+
+        return exhibitions.Select(e => new ExhibitionSalesDto
+        {
+            ExhibitionId = e.ExhibitionId,
+            ExhibitionName = e.Name,
+
+            TicketsSold = e.Tickets
+                .SelectMany(t => t.OrderItems ?? new List<OrderItem>())
+                .Where(oi => oi.Order != null && oi.Order.Status == "Оплачен")
+                .Sum(oi => oi.Quantity)
+        }).ToList();
     }
 }

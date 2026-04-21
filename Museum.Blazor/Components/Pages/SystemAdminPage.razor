@@ -1,0 +1,103 @@
+﻿@page "/admin/system"
+@using Museum.Application.DTOs
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+
+@rendermode InteractiveServer
+
+<div class="admin-container p-4">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3 admin-header-row">
+            <h2 class="fw-bold mb-0 admin-title">ПАНЕЛЬ АДМИНИСТРАТОРА СИСТЕМЫ</h2>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-dark rounded-pill px-3 py-2 fw-bold badge-root">ROOT</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="list-group border-0 bg-transparent">
+                    <button class="list-group-item list-group-item-action sidebar-btn @(activeTab == "users" ? "active" : "")"
+                            @onclick='() => SetTab("users")'>
+                        <i class="bi bi-people-fill me-2"></i> Персонал
+                    </button>
+                    <button class="list-group-item list-group-item-action sidebar-btn @(activeTab == "export" ? "active" : "")"
+                            @onclick='() => SetTab("export")'>
+                        <i class="bi bi-cloud-download me-2"></i> Экспорт
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="content-card p-4 shadow-sm">
+                    @if (activeTab == "users")
+                    {
+                        <h4 class="fw-bold mb-4">Добавление сотрудника</h4>
+                        <EditForm Model="newUser" OnValidSubmit="CreateUser" class="row g-3 p-4 bg-light rounded-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="small fw-bold">Email</label>
+                                <InputText @bind-Value="newUser.Email" class="form-control" placeholder="example@museum.ru" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold">Пароль</label>
+                                <InputText @bind-Value="newUser.Password" type="password" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <InputText @bind-Value="newUser.FirstName" class="form-control" placeholder="Имя" required />
+                            </div>
+                            <div class="col-md-4">
+                                <InputText @bind-Value="newUser.LastName" class="form-control" placeholder="Фамилия" required />
+                            </div>
+                            <div class="col-md-4">
+                                <InputSelect @bind-Value="selectedRole" class="form-select">
+                                    <option value="Администратор музея">Администратор музея</option>
+                                    <option value="Администратор системы">Администратор системы</option>
+                                </InputSelect>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-museum-dark w-100 py-2">СОЗДАТЬ УЧЕТНУЮ ЗАПИСЬ</button>
+                            </div>
+                        </EditForm>
+
+                        <h5 class="fw-bold mt-5 mb-3 text-danger">Удаление доступа</h5>
+                        <div class="input-group mb-3">
+                            <input @bind="emailToDelete" class="form-control" placeholder="Email пользователя" />
+                            <button class="btn btn-danger px-4" @onclick="DeleteUser">УДАЛИТЬ</button>
+                        </div>
+                    }
+                    else if (activeTab == "export")
+                    {
+                        <h4 class="fw-bold mb-4">Экспорт системы</h4>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="p-4 border rounded-4 text-center">
+                                    <p class="text-muted">Список всех пользователей</p>
+                                    <button class="btn btn-outline-dark w-100" @onclick='() => ExportFile("api/admin/export/users", "Users.xlsx")'>СКАЧАТЬ</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-4 border rounded-4 text-center">
+                                    <p class="text-muted">Данные по выставкам</p>
+                                    <button class="btn btn-outline-dark w-100" @onclick='() => ExportFile("api/admin/export/exhibitions", "Exhibitions.xlsx")'>СКАЧАТЬ</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-museum-dark w-100 py-3 rounded-pill fw-bold text-uppercase shadow-sm"
+                                @onclick='() => ExportFile("api/admin/statistics", "FullReport.xlsx")'>
+                            <i class="bi bi-file-earmark-arrow-down me-2"></i> Сформировать полный отчет в Excel
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="position-fixed bottom-0 end-0 m-4 toast-container-custom" style="z-index: 1050;">
+        <div class="alert alert-dark shadow-lg border-0 rounded-3">@message</div>
+    </div>
+}

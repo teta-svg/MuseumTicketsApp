@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Museum.Application.DTOs;
-using Museum.Application.Interfaces;
+using Museum.Application.Interfaces.Repositories;
 using Museum.Domain;
 
 namespace Museum.Persistence.Repositories
@@ -113,18 +113,6 @@ namespace Museum.Persistence.Repositories
         public async Task AddAsync(Exhibition exhibition)
         {
             await _context.Exhibitions.AddAsync(exhibition);
-        }
-
-        public Task UpdateAsync(Exhibition exhibition)
-        {
-            _context.Exhibitions.Update(exhibition);
-            return Task.CompletedTask;
-        }
-
-        public Task DeleteAsync(Exhibition exhibition)
-        {
-            _context.Exhibitions.Remove(exhibition);
-            return Task.CompletedTask;
         }
 
         public async Task SaveChangesAsync()

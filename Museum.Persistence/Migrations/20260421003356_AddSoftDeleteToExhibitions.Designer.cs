@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Museum.Persistence;
 
@@ -11,9 +12,11 @@ using Museum.Persistence;
 namespace Museum.Persistence.Migrations
 {
     [DbContext(typeof(MuseumTicketsDBContext))]
-    partial class MuseumTicketsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260421003356_AddSoftDeleteToExhibitions")]
+    partial class AddSoftDeleteToExhibitions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -538,7 +541,7 @@ namespace Museum.Persistence.Migrations
                     b.HasOne("Museum.Domain.Ticket", "Ticket")
                         .WithMany("OrderItems")
                         .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -584,7 +587,7 @@ namespace Museum.Persistence.Migrations
                     b.HasOne("Museum.Domain.Exhibition", "Exhibition")
                         .WithMany("Tickets")
                         .HasForeignKey("ExhibitionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Exhibition");

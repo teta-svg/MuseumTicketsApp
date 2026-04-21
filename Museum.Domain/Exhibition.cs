@@ -20,4 +20,5 @@ public partial class Exhibition
 
     [InverseProperty("Exhibition")]
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+    public bool IsDeleted { get; set; } = false;
 }

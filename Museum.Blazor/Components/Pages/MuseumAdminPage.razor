@@ -1,27 +1,23 @@
 ﻿@page "/admin/museum"
 @using Museum.Application.DTOs
 @using Microsoft.AspNetCore.Components.Forms
-@using System.Net.Http.Headers
 @inject HttpClient Http
 @inject IJSRuntime JS
 
 @rendermode InteractiveServer
 
 <div class="container-fluid py-4 admin-page-container">
-
     <div class="admin-header">
         <div>
             <h3 class="header-title">УПРАВЛЕНИЕ ВЫСТАВКАМИ</h3>
-            <p class="text-muted mb-0 small">Редактирование контента и контроль продаж</p>
+            <p class="text-muted mb-0 small">Контроль текущих экспозиций и продаж</p>
         </div>
-        <button class="btn btn-museum-dark shadow-sm" @onclick="() => OpenModal()">
+        <button class="btn btn-museum-dark shadow-sm" @onclick="OpenModal">
             <i class="bi bi-plus-lg me-2"></i>НОВАЯ ВЫСТАВКА
         </button>
     </div>
 
-
     <div class="row align-items-start">
-
         <div class="col-lg-8">
             <div class="row">
                 @if (salesReports == null)
@@ -33,7 +29,7 @@
                 else if (!salesReports.Any())
                 {
                     <div class="col-12">
-                        <div class="empty-state shadow-sm">
+                        <div class="empty-state shadow-sm text-center p-5">
                             <i class="bi bi-folder2-open display-4 text-muted mb-3 d-block"></i>
                             <h5 class="text-muted">Список пуст</h5>
                         </div>
@@ -49,7 +45,6 @@
                                 <div class="card-body p-4">
                                     <h5 class="fw-bold text-dark mb-1">@report.ExhibitionName</h5>
                                     <div class="text-muted small mb-3">ID объекта: @report.ExhibitionId</div>
-                                    
                                     <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                                         <div class="ticket-label">Билетов продано</div>
                                         <span class="badge badge-museum px-3 py-2 rounded-pill">@report.TicketsSold шт.</span>
@@ -61,6 +56,7 @@
                 }
             </div>
         </div>
+
         <div class="col-lg-4">
             @if (selectedReport != null)
             {
@@ -70,29 +66,21 @@
                     </div>
                     <div class="card-body p-4 text-center">
                         <h6 class="fw-bold mb-4 text-uppercase">@selectedReport.ExhibitionName</h6>
-            
-                        <button class="btn btn-museum-outline w-100 mb-3" @onclick="() => OpenModal(selectedReport.ExhibitionId)">
-                            <i class="bi bi-pencil-square me-2"></i>РЕДАКТИРОВАТЬ
-                        </button>
-            
                         <button class="btn btn-museum-dark w-100 mb-3 py-2 fw-bold shadow-sm" style="border-radius: 50px;" @onclick="CloseSales">
                             <i class="bi bi-lock-fill me-2"></i>ЗАКРЫТЬ ПРОДАЖИ
                         </button>
-            
                         <hr class="museum-hr" />
-            
                         <button class="btn btn-link btn-delete w-100 py-2" @onclick="DeleteExhibition">
                             <i class="bi bi-trash me-2"></i>УДАЛИТЬ ОБЪЕКТ
                         </button>
                     </div>
-
                 </div>
             }
             else
             {
-                <div class="selection-placeholder">
+                <div class="selection-placeholder text-center p-5">
                     <i class="bi bi-arrow-left-circle d-block mb-3 opacity-25" style="font-size: 2rem;"></i>
-                    <p class="text-muted small mb-0">Выберите выставку из списка для управления</p>
+                    <p class="text-muted small mb-0">Выберите выставку для управления</p>
                 </div>
             }
         </div>
@@ -104,20 +92,16 @@
     <div class="modal d-block museum-modal-wrapper" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                
                 <div class="modal-header museum-modal-header">
-                    <h5 class="modal-title museum-modal-title">
-                        @(isEditMode ? "Редактирование объекта" : "Регистрация новой выставки")
-                    </h5>
+                    <h5 class="modal-title museum-modal-title">Регистрация новой выставки</h5>
                     <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
                 </div>
 
                 <EditForm Model="@newExhibition" OnValidSubmit="SaveExhibition">
                     <DataAnnotationsValidator />
-                    
                     <div class="modal-body museum-modal-body">
                         <ValidationSummary class="alert alert-dark py-2 mb-4 rounded-3 small" />
-
+                        
                         <div class="row g-3 mb-4">
                             <div class="col-12">
                                 <label class="museum-label">Название экспозиции</label>
@@ -136,8 +120,8 @@
                         <h6 class="museum-section-title">Локация музея</h6>
                         <div class="row g-3 mb-4">
                             <div class="col-md-12">
-                                <label class="museum-label">Музей / Комплекс</label>
-                                <InputText @bind-Value="newExhibition.MuseumName" class="form-control museum-input" placeholder="Напр: Эрмитаж" required />
+                                <label class="museum-label">Музей</label>
+                                <InputText @bind-Value="newExhibition.MuseumName" class="form-control museum-input" required />
                             </div>
                             <div class="col-md-4">
                                 <label class="museum-label">Город</label>
@@ -185,52 +169,10 @@
                                 </div>
                             </div>
                         }
-                        <div class="d-flex justify-content-between align-items-center mt-4 mb-3 pt-3 border-top">
-                            <h6 class="museum-section-title border-0 m-0">График работы</h6>
-                            <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 fw-bold" style="font-size: 0.7rem;" @onclick="AddSchedule">
-                                + ДОБАВИТЬ ВРЕМЯ
-                            </button>
-                        </div>
-
-                        @foreach (var schItem in newExhibition.Schedules)
-                        {
-                            <div class="card card-body schedule-card mb-3 p-3 rounded-4 shadow-sm">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="time-label">Период действия</label>
-                                        <div class="input-group input-group-sm">
-                                            <input type="date" class="form-control museum-input"
-                                                   @onchange="@(e => schItem.StartDate = DateOnly.Parse(e.Value.ToString()))" value="@schItem.StartDate.ToString("yyyy-MM-dd")" />
-                                            <span class="input-group-text bg-white border-dark-subtle">—</span>
-                                            <input type="date" class="form-control museum-input"
-                                                   @onchange="@(e => schItem.EndDate = DateOnly.Parse(e.Value.ToString()))" value="@schItem.EndDate.ToString("yyyy-MM-dd")" />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <label class="time-label">Часы работы</label>
-                                        <div class="input-group input-group-sm">
-                                            <input type="time" class="form-control museum-input"
-                                                   @onchange="@(e => schItem.Open = TimeOnly.Parse(e.Value.ToString()))" value="@schItem.Open.ToString("HH:mm")" />
-                                            <span class="input-group-text bg-white border-dark-subtle">до</span>
-                                            <input type="time" class="form-control museum-input"
-                                                   @onchange="@(e => schItem.Close = TimeOnly.Parse(e.Value.ToString()))" value="@schItem.Close.ToString("HH:mm")" />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-1 text-end align-self-end">
-                                        <button type="button" class="btn btn-link text-danger border-0 p-0 mb-1" @onclick="() => newExhibition.Schedules.Remove(schItem)">
-                                            <i class="bi bi-x-circle-fill"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        }
                     </div>
-
                     <div class="modal-footer-custom">
                         <button type="button" class="btn btn-outline-dark btn-pill px-4 me-2" @onclick="CloseModal">ОТМЕНА</button>
-                        <button type="submit" class="btn btn-dark btn-pill px-5 py-2 shadow-sm">
-                            @(isEditMode ? "СОХРАНИТЬ ИЗМЕНЕНИЯ" : "ОПУБЛИКОВАТЬ ВЫСТАВКУ")
-                        </button>
+                        <button type="submit" class="btn btn-dark btn-pill px-5 py-2 shadow-sm">ОПУБЛИКОВАТЬ ВЫСТАВКУ</button>
                     </div>
                 </EditForm>
             </div>

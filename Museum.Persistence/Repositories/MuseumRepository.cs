@@ -18,12 +18,6 @@ namespace Museum.Persistence.Repositories
             await _context.Museums.AddAsync(museum);
         }
 
-        public async Task<Museum.Domain.Museum?> GetByNameAsync(string name)
-        {
-            return await _context.Museums
-                .FirstOrDefaultAsync(m => m.Name == name);
-        }
-
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

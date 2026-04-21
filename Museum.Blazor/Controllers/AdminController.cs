@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Museum.Application.DTOs;
+using Museum.Application.Interfaces;
 
 namespace Museum.WebAPI.Controllers
 {
@@ -24,20 +25,19 @@ namespace Museum.WebAPI.Controllers
             return Ok(new { ExhibitionId = id });
         }
 
-        [HttpPut("exhibitions/{id}")]
-        [Authorize(Roles = "Администратор музея,Администратор системы")]
-        public async Task<IActionResult> UpdateExhibition(int id, [FromBody] CreateExhibitionAdminDto dto)
-        {
-            await _adminService.UpdateExhibitionAsync(id, dto);
-            return NoContent();
-        }
-
         [HttpDelete("exhibitions/{id}")]
         [Authorize(Roles = "Администратор музея,Администратор системы")]
         public async Task<IActionResult> DeleteExhibition(int id)
         {
             await _adminService.DeleteExhibitionAsync(id);
             return NoContent();
+        }
+        [HttpGet("exhibitions/list")]
+        [Authorize(Roles = "Администратор музея,Администратор системы")]
+        public async Task<IActionResult> GetExhibitionsList()
+        {
+            var data = await _adminService.GetExhibitionSalesAsync();
+            return Ok(data);
         }
 
         [HttpPost("exhibitions/{id}/close-sales")]
@@ -46,30 +46,6 @@ namespace Museum.WebAPI.Controllers
         {
             await _adminService.CloseTicketSalesAsync(id);
             return Ok(new { message = "Продажи закрыты" });
-        }
-
-        [HttpPost("tickets")]
-        [Authorize(Roles = "Администратор музея,Администратор системы")]
-        public async Task<IActionResult> AddTicket([FromBody] CreateTicketAdminDto dto)
-        {
-            await _adminService.AddTicketAsync(dto);
-            return Ok();
-        }
-
-        [HttpPut("tickets/{ticketId}")]
-        [Authorize(Roles = "Администратор музея,Администратор системы")]
-        public async Task<IActionResult> UpdateTicket(int ticketId, [FromBody] UpdateTicketAdminDto dto)
-        {
-            await _adminService.UpdateTicketAsync(ticketId, dto);
-            return NoContent();
-        }
-
-        [HttpPost("schedules")]
-        [Authorize(Roles = "Администратор музея,Администратор системы")]
-        public async Task<IActionResult> AddSchedule([FromBody] CreateScheduleAdminDto dto)
-        {
-            await _adminService.AddScheduleAsync(dto);
-            return Ok();
         }
 
         [HttpPost("users")]
@@ -88,39 +64,12 @@ namespace Museum.WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpGet("orders")]
-        [Authorize(Roles = "Администратор системы")]
-        public async Task<IActionResult> GetOrders()
-        {
-            return Ok(await _adminService.GetAllOrdersAsync());
-        }
-
-        [HttpPatch("orders/{orderId}/status")]
-        [Authorize(Roles = "Администратор системы")]
-        public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromQuery] string status)
-        {
-            await _adminService.UpdateOrderStatusAsync(orderId, status);
-            return Ok(new { message = "Статус обновлён" });
-        }
-
-        [HttpGet("reports/sales")]
-        [Authorize(Roles = "Администратор системы")]
-        public async Task<IActionResult> GetSalesReport()
-        {
-            return Ok(await _adminService.GetExhibitionSalesAsync());
-        }
-
         [HttpGet("statistics")]
         [Authorize(Roles = "Администратор системы")]
         public async Task<IActionResult> GetStatistics()
         {
             var (fileContent, fileName) = await _adminService.GetStatisticsAsync();
-
-            return File(
-                fileContent,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                fileName
-            );
+            return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         [HttpGet("export/users")]
@@ -128,12 +77,7 @@ namespace Museum.WebAPI.Controllers
         public async Task<IActionResult> ExportUsers()
         {
             var (fileContent, fileName) = await _adminService.ExportUsersAsync();
-
-            return File(
-                fileContent,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                fileName
-            );
+            return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         [HttpGet("export/exhibitions")]
@@ -141,22 +85,7 @@ namespace Museum.WebAPI.Controllers
         public async Task<IActionResult> ExportExhibitions()
         {
             var (fileContent, fileName) = await _adminService.ExportExhibitionsAsync();
-
-            return File(
-                fileContent,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                fileName
-            );
+            return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
-
-        [HttpGet("exhibitions/list")]
-        [Authorize(Roles = "Администратор музея,Администратор системы")]
-        public async Task<IActionResult> GetExhibitionsList()
-        {
-            var data = await _adminService.GetExhibitionSalesAsync();
-            return Ok(data);
-        }
-
-
     }
 }

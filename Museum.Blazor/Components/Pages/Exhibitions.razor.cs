@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 using Museum.Application.DTOs;
 
-namespace Museum.Blazor.Components.Pages.Public
+namespace Museum.Blazor.Components.Pages
 {
     public partial class Exhibitions
     {
@@ -25,12 +25,9 @@ namespace Museum.Blazor.Components.Pages.Public
 
                 var url = QueryHelpers.AddQueryString("api/Exhibitions/filter", queryParams);
 
-                Console.WriteLine($"[DEBUG] Сформирован URL: {Https.BaseAddress}{url}");
-
                 var result = await Https.GetFromJsonAsync<List<PublicExhibitionDTO>>(url);
 
                 exhibitions = result ?? new();
-                Console.WriteLine($"[DEBUG] Получено объектов: {exhibitions.Count}");
 
                 StateHasChanged();
             }

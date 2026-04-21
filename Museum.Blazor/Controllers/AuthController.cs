@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Museum.Application.DTOs;
 using Museum.Application.Interfaces;
+using Museum.Application.Interfaces.Repositories;
 
 namespace Museum.WebAPI.Controllers;
 

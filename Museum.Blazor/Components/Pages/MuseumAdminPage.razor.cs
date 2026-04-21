@@ -2,15 +2,13 @@
 using Museum.Application.DTOs;
 using System.Net.Http.Headers;
 
-namespace Museum.Blazor.Components.Pages.Admin.MuseumAdmin
+namespace Museum.Blazor.Components.Pages
 {
     public partial class MuseumAdminPage
     {
         private List<ExhibitionSalesDto> salesReports;
         private ExhibitionSalesDto selectedReport;
         private bool showModal = false;
-        private bool isEditMode = false;
-        private int currentId = 0;
         private CreateExhibitionAdminDto newExhibition = new();
 
         protected override async Task OnInitializedAsync() => await LoadData();
@@ -32,48 +30,33 @@ namespace Museum.Blazor.Components.Pages.Admin.MuseumAdmin
                 Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
-        private async Task OpenModal(int? id = null)
+        private void OpenModal()
         {
-            if (id.HasValue)
+            newExhibition = new CreateExhibitionAdminDto
             {
-                isEditMode = true;
-                currentId = id.Value;
-                var selected = salesReports.FirstOrDefault(x => x.ExhibitionId == id.Value);
-                newExhibition = new CreateExhibitionAdminDto
-                {
-                    Name = selected?.ExhibitionName,
-                    StartDate = DateTime.Today,
-                    EndDate = DateTime.Today.AddMonths(1),
-                    Tickets = new(),
-                    Schedules = new()
-                };
-            }
-            else
-            {
-                isEditMode = false;
-                newExhibition = new CreateExhibitionAdminDto { StartDate = DateTime.Today, EndDate = DateTime.Today.AddMonths(1), Tickets = new() { new CreateTicketAdminDto { Type = "Взрослый", Quantity = 100, Price = 500 } }, Schedules = new() };
-            }
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddMonths(1),
+                Tickets = new() { new CreateTicketAdminDto { Type = "Взрослый", Quantity = 100, Price = 500 } }
+            };
             showModal = true;
         }
 
         private void CloseModal() => showModal = false;
+
         private void AddTicket() => newExhibition.Tickets.Add(new CreateTicketAdminDto { Type = "Новый", Quantity = 50, Price = 300 });
-        private void AddSchedule() => newExhibition.Schedules.Add(new CreateScheduleAdminDto { StartDate = DateOnly.FromDateTime(DateTime.Today), EndDate = DateOnly.FromDateTime(DateTime.Today), Open = new TimeOnly(10, 0), Close = new TimeOnly(19, 0) });
 
         private async Task SaveExhibition()
         {
             try
             {
                 await SetAuthHeader();
-                HttpResponseMessage res = isEditMode
-                    ? await Http.PutAsJsonAsync($"api/admin/exhibitions/{currentId}", newExhibition)
-                    : await Http.PostAsJsonAsync("api/admin/exhibitions", newExhibition);
+                var res = await Http.PostAsJsonAsync("api/admin/exhibitions", newExhibition);
 
                 if (res.IsSuccessStatusCode)
                 {
                     showModal = false;
                     await LoadData();
-                    await JS.InvokeVoidAsync("alert", "Успешно сохранено!");
+                    await JS.InvokeVoidAsync("alert", "Выставка успешно опубликована!");
                 }
                 else
                 {
@@ -95,10 +78,20 @@ namespace Museum.Blazor.Components.Pages.Admin.MuseumAdmin
         private async Task DeleteExhibition()
         {
             if (selectedReport == null) return;
-            if (!await JS.InvokeAsync<bool>("confirm", "Вы уверены?")) return;
+            if (!await JS.InvokeAsync<bool>("confirm", "Удалить объект? Это действие нельзя отменить.")) return;
+
             await SetAuthHeader();
             var res = await Http.DeleteAsync($"api/admin/exhibitions/{selectedReport.ExhibitionId}");
-            if (res.IsSuccessStatusCode) { await LoadData(); selectedReport = null; }
+
+            if (res.IsSuccessStatusCode)
+            {
+                await LoadData();
+                selectedReport = null;
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Не удалось удалить. Возможно, есть активные заказы.");
+            }
         }
     }
 }

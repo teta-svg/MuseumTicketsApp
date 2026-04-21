@@ -1,7 +1,7 @@
 ﻿using Microsoft.JSInterop;
 using Museum.Application.DTOs;
 
-namespace Museum.Blazor.Components.Pages.Orders
+namespace Museum.Blazor.Components.Pages
 {
     public partial class MyOrders
     {
@@ -35,14 +35,6 @@ namespace Museum.Blazor.Components.Pages.Orders
                 isRefreshing = false;
             }
         }
-
-        private string GetStatusClass(string status) => status switch
-        {
-            "Оплачен" => "bg-success-subtle text-success",
-            "В ожидании" => "bg-warning-subtle text-warning border border-warning",
-            "Отменён" => "bg-danger-subtle text-danger",
-            _ => "bg-light text-muted"
-        };
 
         private async Task PayPendingOrder(OrderDto order)
         {

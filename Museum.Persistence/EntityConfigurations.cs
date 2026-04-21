@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Museum.Domain;
 
-namespace Museum.Persistence.Configurations
+namespace Museum.Persistence
 {
     public class MuseumComplexConfiguration : IEntityTypeConfiguration<MuseumComplex>
     {
@@ -16,9 +16,9 @@ namespace Museum.Persistence.Configurations
         }
     }
 
-    public class MuseumConfiguration : IEntityTypeConfiguration<Museum.Domain.Museum>
+    public class MuseumConfiguration : IEntityTypeConfiguration<Domain.Museum>
     {
-        public void Configure(EntityTypeBuilder<Museum.Domain.Museum> builder)
+        public void Configure(EntityTypeBuilder<Domain.Museum> builder)
         {
             builder.HasKey(e => e.MuseumId);
             builder.Property(e => e.MuseumId)
@@ -90,6 +90,7 @@ namespace Museum.Persistence.Configurations
 
             builder.Property(e => e.Name).HasMaxLength(255).IsRequired();
             builder.Property(e => e.Photo).HasMaxLength(255);
+            builder.HasQueryFilter(e => !e.IsDeleted);
         }
     }
     public class MuseumExhibitionConfiguration : IEntityTypeConfiguration<MuseumExhibition>
@@ -128,7 +129,7 @@ namespace Museum.Persistence.Configurations
             builder.HasOne(e => e.Exhibition)
                    .WithMany(x => x.Tickets)
                    .HasForeignKey(e => e.ExhibitionId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
     public class TicketPriceConfiguration : IEntityTypeConfiguration<TicketPrice>
@@ -202,7 +203,7 @@ namespace Museum.Persistence.Configurations
             builder.HasOne(e => e.Ticket)
                    .WithMany(t => t.OrderItems)
                    .HasForeignKey(e => e.TicketId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
     public class PaymentConfiguration : IEntityTypeConfiguration<Payment>

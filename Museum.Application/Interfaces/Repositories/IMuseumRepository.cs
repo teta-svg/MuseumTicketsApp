@@ -1,7 +1,6 @@
 ﻿public interface IMuseumRepository
 {
     Task AddAsync(Museum.Domain.Museum museum);
-    Task<Museum.Domain.Museum?> GetByNameAsync(string name);
     Task<Museum.Domain.MuseumComplex?> GetComplexByNameAsync(string name);
     Task AddComplexAsync(Museum.Domain.MuseumComplex complex);
 

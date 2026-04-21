@@ -1,5 +1,6 @@
 ﻿using Museum.Application.DTOs;
 using Museum.Application.Interfaces;
+using Museum.Application.Interfaces.Repositories;
 using Museum.Domain;
 
 namespace Museum.Application.Services;

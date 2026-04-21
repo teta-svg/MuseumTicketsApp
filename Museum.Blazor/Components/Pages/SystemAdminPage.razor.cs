@@ -1,42 +1,16 @@
 ﻿using Microsoft.JSInterop;
-using Museum.Application.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 
-namespace Museum.Blazor.Components.Pages.Admin.SystemAdmin
+namespace Museum.Blazor.Components.Pages
 {
     public partial class SystemAdminPage
     {
         private string activeTab = "users";
         private string message = "";
-        private string adminEmail = "";
         private string selectedRole = "Администратор музея";
         private string emailToDelete = "";
-        private bool isInitialized = false;
-
         private RegisterRequest newUser = new();
-        private List<OrderDto>? orders;
-
-        private async Task ShowMessage(string text, int duration = 3000)
-        {
-            message = text;
-            StateHasChanged();
-            await Task.Delay(duration);
-            message = "";
-            StateHasChanged();
-        }
-
-        private async Task LoadSales()
-        {
-            activeTab = "stats";
-            message = "";
-
-            if (orders == null)
-            {
-                await LoadOrders();
-            }
-            StateHasChanged();
-        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -62,12 +36,7 @@ namespace Museum.Blazor.Components.Pages.Admin.SystemAdmin
                     if (!roles.Contains("администратор системы"))
                     {
                         Nav.NavigateTo("/");
-                        return;
                     }
-
-                    adminEmail = jwt.Claims.FirstOrDefault(c => c.Type == "email" || c.Type == "sub")?.Value ?? "";
-                    isInitialized = true;
-                    StateHasChanged();
                 }
                 catch
                 {
@@ -89,55 +58,57 @@ namespace Museum.Blazor.Components.Pages.Admin.SystemAdmin
             message = "";
         }
 
-        private async Task LoadOrders()
+        private async Task ShowMessage(string text)
         {
-            SetTab("orders");
-            await SetAuthHeader();
-            try
-            {
-                orders = await Http.GetFromJsonAsync<List<OrderDto>>("api/admin/orders");
-            }
-            catch (Exception ex)
-            {
-                orders = new();
-                _ = ShowMessage("Ошибка загрузки: " + ex.Message);
-            }
-        }
-
-        private async Task UpdateStatus(int id, string status)
-        {
-            await SetAuthHeader();
-            var resp = await Http.PatchAsync($"api/admin/orders/{id}/status?status={status}", null);
-            if (resp.IsSuccessStatusCode)
-            {
-                _ = ShowMessage("Статус обновлен!");
-                await LoadOrders();
-            }
-            else { _ = ShowMessage("Не удалось обновить статус"); }
+            message = text;
+            StateHasChanged();
+            await Task.Delay(3000);
+            message = "";
+            StateHasChanged();
         }
 
         private async Task CreateUser()
         {
             await SetAuthHeader();
             var resp = await Http.PostAsJsonAsync($"api/admin/users?role={selectedRole}", newUser);
-            _ = ShowMessage(resp.IsSuccessStatusCode ? "Сотрудник успешно создан!" : "Ошибка создания");
-            if (resp.IsSuccessStatusCode) newUser = new();
+
+            if (resp.IsSuccessStatusCode)
+            {
+                newUser = new();
+                _ = ShowMessage("Сотрудник успешно создан!");
+            }
+            else
+            {
+                _ = ShowMessage("Ошибка создания");
+            }
         }
 
         private async Task DeleteUser()
         {
             if (string.IsNullOrEmpty(emailToDelete)) return;
+
             await SetAuthHeader();
             var resp = await Http.DeleteAsync($"api/admin/users/{emailToDelete}");
-            _ = ShowMessage(resp.IsSuccessStatusCode ? "Пользователь удален" : "Ошибка удаления");
+
+            if (resp.IsSuccessStatusCode)
+            {
+                emailToDelete = "";
+                _ = ShowMessage("Пользователь удален");
+            }
+            else
+            {
+                _ = ShowMessage("Ошибка удаления");
+            }
         }
 
         private async Task ExportFile(string url, string fileName)
         {
             message = "Генерация файла...";
             StateHasChanged();
+
             await SetAuthHeader();
             var resp = await Http.GetAsync(url);
+
             if (resp.IsSuccessStatusCode)
             {
                 var content = await resp.Content.ReadAsByteArrayAsync();
@@ -149,7 +120,5 @@ namespace Museum.Blazor.Components.Pages.Admin.SystemAdmin
                 _ = ShowMessage("Ошибка при скачивании");
             }
         }
-
-        private async Task DownloadExcel() { await ExportFile("api/admin/statistics", "Report.xlsx"); }
     }
 }

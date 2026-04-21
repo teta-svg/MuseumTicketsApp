@@ -1,7 +1,7 @@
 ﻿using Museum.Application.DTOs;
 using Museum.Domain;
 
-namespace Museum.Application.Interfaces
+namespace Museum.Application.Interfaces.Repositories
 {
     public interface IExhibitionRepository
     {
@@ -10,8 +10,6 @@ namespace Museum.Application.Interfaces
         Task<Exhibition?> GetByIdAsync(int id);
 
         Task AddAsync(Exhibition exhibition);
-        Task UpdateAsync(Exhibition exhibition);
-        Task DeleteAsync(Exhibition exhibition);
         Task SaveChangesAsync();
 
     }

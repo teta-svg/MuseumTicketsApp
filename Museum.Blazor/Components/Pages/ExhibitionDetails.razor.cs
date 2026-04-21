@@ -2,7 +2,7 @@
 using Microsoft.JSInterop;
 using Museum.Application.DTOs;
 
-namespace Museum.Blazor.Components.Pages.Public
+namespace Museum.Blazor.Components.Pages
 {
     public partial class ExhibitionDetails
     {

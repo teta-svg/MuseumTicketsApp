@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Museum.Application.Interfaces;
+using Museum.Application.Interfaces.Repositories;
 using Museum.Domain;
 
 namespace Museum.Persistence.Repositories
@@ -11,18 +11,6 @@ namespace Museum.Persistence.Repositories
         public TicketRepository(MuseumTicketsDBContext context)
         {
             _context = context;
-        }
-
-        public async Task AddAsync(Ticket ticket)
-        {
-            await _context.Tickets.AddAsync(ticket);
-        }
-
-        public async Task<Ticket?> GetByIdAsync(int id)
-        {
-            return await _context.Tickets
-                .Include(t => t.TicketPrices)
-                .FirstOrDefaultAsync(t => t.TicketId == id);
         }
 
         public async Task<List<Ticket>> GetTicketsByExhibitionAsync(int exhibitionId)
@@ -41,11 +29,5 @@ namespace Museum.Persistence.Repositories
         {
             return await _context.Tickets.Include(t => t.TicketPrices).ToListAsync();
         }
-        public async Task DeleteAsync(Ticket ticket)
-        {
-            _context.Tickets.Remove(ticket);
-            await Task.CompletedTask;
-        }
-
     }
 }

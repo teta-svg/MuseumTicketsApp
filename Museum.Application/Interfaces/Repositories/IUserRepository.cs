@@ -1,6 +1,6 @@
 ﻿using Museum.Domain;
 
-namespace Museum.Application.Interfaces
+namespace Museum.Application.Interfaces.Repositories
 {
     public interface IUserRepository
     {

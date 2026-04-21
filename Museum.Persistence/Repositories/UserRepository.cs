@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Museum.Application.Interfaces;
+using Museum.Application.Interfaces.Repositories;
 using Museum.Domain;
 
 namespace Museum.Persistence.Repositories

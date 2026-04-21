@@ -1,14 +1,11 @@
 ﻿using Museum.Domain;
 
-namespace Museum.Application.Interfaces
+namespace Museum.Application.Interfaces.Repositories
 {
     public interface ITicketRepository
     {
-        Task AddAsync(Ticket ticket);
-        Task<Ticket?> GetByIdAsync(int id);
         Task SaveChangesAsync();
         Task<List<Ticket>> GetTicketsByExhibitionAsync(int exhibitionId);
         Task<List<Ticket>> GetAllAsync();
-        Task DeleteAsync(Ticket ticket);
     }
 }

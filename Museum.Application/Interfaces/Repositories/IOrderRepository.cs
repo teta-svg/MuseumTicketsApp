@@ -1,6 +1,6 @@
 ﻿using Museum.Application.DTOs;
 
-namespace Museum.Application.Interfaces
+namespace Museum.Application.Interfaces.Repositories
 {
     public interface IOrderRepository
     {

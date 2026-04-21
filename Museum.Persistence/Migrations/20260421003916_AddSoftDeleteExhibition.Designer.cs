@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Museum.Persistence;
 
@@ -11,9 +12,11 @@ using Museum.Persistence;
 namespace Museum.Persistence.Migrations
 {
     [DbContext(typeof(MuseumTicketsDBContext))]
-    partial class MuseumTicketsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260421003916_AddSoftDeleteExhibition")]
+    partial class AddSoftDeleteExhibition
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
